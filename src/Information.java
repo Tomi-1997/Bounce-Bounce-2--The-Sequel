@@ -1,0 +1,82 @@
+import edu.princeton.cs.introcs.StdDraw;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Information implements Drawable, Updatable
+{
+    double maxX, maxY;
+    Player p;
+
+    ArrayList<Firework> fireworks;
+    int titleSize = 60, currentMilestone = 100;
+    boolean atMilestone = false;
+
+    public Information(double maxX, double maxY, Player p)
+    {
+        this.maxX = maxX;
+        this.maxY = maxY;
+        this.p = p;
+    }
+    @Override
+    public void draw()
+    {
+        StdDraw.setPenColor(p.cl);
+
+        /*
+            Title
+         */
+        Font font = new Font("Monospaced", Font.BOLD, titleSize);
+        StdDraw.setFont(font);
+        String title = (int) p.score + "";
+        StdDraw.text(maxX / 2, maxY / 10, title);
+
+        /*
+            Fireworks - when a milestone is hit
+         */
+
+        if (atMilestone) for (Firework f : fireworks) f.draw();
+
+        /*
+            Sub text
+         */
+        font = new Font("Monospaced", Font.BOLD, 12);
+        StdDraw.setFont(font);
+        StdDraw.textLeft(0, Game.maxY * 0.1, "hit a wall to gain an upward momentum");
+        StdDraw.textLeft(0, Game.maxY * 0.05, "hold right and left arrow keys to move");
+        StdDraw.textLeft(0, 0, "press q to quit");
+    }
+
+    @Override
+    public void update()
+    {
+        p.score += 0.1;
+        if (!atMilestone && p.score >= currentMilestone) new Thread(this::setMilestone).start();
+
+        /*
+            Update fireworks
+         */
+        if (atMilestone) for (Firework f : fireworks) f.update();
+    }
+
+    private void setMilestone()
+    {
+        atMilestone = true;
+        generateFireworks(); // launch fireworks when reaching milestone
+        titleSize = 100;    // big title
+        currentMilestone = currentMilestone + 100; // Set next milestone
+        Game.delay(3 * 1000); // wait a bit, then revert to normal
+        atMilestone = false;
+        titleSize = 60;
+    }
+
+    private void generateFireworks()
+    {
+        int fireworksNum = 200;
+        double radius = 10;
+        fireworks = new ArrayList<>();
+        for (int i = 0; i < fireworksNum; i++)
+        {
+            fireworks.add(new Firework(maxX / 2, maxY / 10, radius, true));
+        }
+    }
+}
