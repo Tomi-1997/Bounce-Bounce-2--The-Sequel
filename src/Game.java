@@ -1,3 +1,4 @@
+import edu.princeton.cs.introcs.Draw;
 import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -11,29 +12,42 @@ public class Game
 {
     private final Collection<Updatable> US;
     private final Collection<Drawable>  DS;
+    private Player p;
     private double lastCollision = 0;
+    private boolean restartAvailable = true;
 
-    private static final long FPS = 1000 / 60;
+    private static long FPS = 1000 / 60;
     public static final int obstacles = 10, maxX = 800, maxY = 400, obstacleEPS = 20, pEPS = 5, hitReward = 10;
-    public static final double G = 0.15, minVY = -10, maxVY = 7, maxVX = 4, VX = 0.2, hitVY = 5;
+    public static double G = 0.15;
+    public static final double minVY = -10;
+    public static final double maxVY = 7;
+    public static final double maxVX = 4;
+    public static final double VX = 0.2;
+    public static final double hitVY = 5;
 
     public Game()
     {
         US = Collections.synchronizedCollection(new ArrayList<>());
         DS = Collections.synchronizedCollection(new ArrayList<>());
 
-        /*
-            Create player
-         */
-        Player p = new Player(0, maxY / 2.0, 5);
-        US.add(p);
-        DS.add(p);
+        createPlayer();
+        createObstacles((int) (maxX * 0.25), maxY / 2);
+        createInformation();
 
-        /*
-            Create obstacles which reset in position after passing the screen
-         */
-        int x = (int) (maxX * 0.25);
-        int y = maxY / 2;
+    }
+
+    private void createInformation()
+    {
+        Information i = new Information(maxX, maxY, this.p);
+        US.add(i);
+        DS.add(i);
+    }
+
+    private void createObstacles(int x, int y)
+    {
+//        US.removeIf( u -> u.getClass() == Obstacle.class );
+//        DS.removeIf( u -> u.getClass() == Obstacle.class );
+
         for (int i = 0; i < obstacles; i++)
         {
             int w = randInt(50, 60);
@@ -46,14 +60,14 @@ public class Game
             x = x + randInt(150, 200);
             y = y + randInt(-30, 30);
         }
+    }
 
-        /*
-            Info object for score, etc
-         */
-        Information i = new Information(maxX, maxY, p);
-        US.add(i);
-        DS.add(i);
-
+    private void createPlayer()
+    {
+        Player p = new Player(0, maxY / 2.0, 5);
+        US.add(p);
+        DS.add(p);
+        this.p = p;
     }
 
     private int randInt(int a, int b)
@@ -75,8 +89,52 @@ public class Game
             iterate();
             StdDraw.show(0);
             delay();
+
+            if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); };
         }
         System.exit(0);
+    }
+
+    private void restart()
+    {
+        restartAvailable = false;
+        int duration = 1000;
+        int dots = 3;
+        String text = "Restarting";
+        for (int i = 0; i <= dots; i++)
+        {
+            final String lambdaText = text;
+            Drawable d = () -> StdDraw.textLeft(maxX / 2.3, maxY / 2.0, lambdaText);
+            DS.add(d);
+            delay(duration / dots);
+            DS.remove(d);
+            text = text + ".";
+        }
+
+        int dropDuration = maxY / 2;
+        createObstacles((int) (maxX * 0.25), (int) (maxY * 1.5));
+
+        /*
+            TODO FIX REMOVAL OF OLD BLOCKS
+         */
+        for (int i = 0; i < dropDuration; i++)
+        {
+            synchronized (US)
+            {
+                for (Updatable u : US)
+                {
+                    if (u.getClass() != Obstacle.class) continue;
+                    Obstacle o = (Obstacle) u;
+                    o.y = o.y - 2;
+                }
+            }
+            delay(10);
+        }
+
+
+        delay(1000);
+        System.out.println(US.size());
+        restartAvailable = true;
     }
 
     private boolean isRunning()
@@ -99,9 +157,8 @@ public class Game
 
     private void iterate()
     {
-
-        for (Iterator<Updatable> it = US.iterator(); it.hasNext(); ){Updatable u = it.next();u.update();}
-        for (Iterator<Drawable> it = DS.iterator(); it.hasNext(); ) {Drawable d = it.next();d.draw();}
+        synchronized (US) { for (Updatable u : US) u.update(); }
+        synchronized (DS) { for (Drawable  d : DS) d.draw(); }
         checkCollision();
     }
 
@@ -199,5 +256,6 @@ public class Game
             US.remove(f);
             DS.remove(f);
         }
+
     }
 }
