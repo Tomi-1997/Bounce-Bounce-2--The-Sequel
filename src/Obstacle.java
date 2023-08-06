@@ -135,6 +135,6 @@ public class Obstacle extends TemplateObject
 
     @Override
     public void reset() {
-
+        isReset = true;
     }
 }

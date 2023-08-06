@@ -43,7 +43,7 @@ public class Information extends TemplateObject
         StdDraw.setFont(font);
         StdDraw.textLeft(0, Game.maxY * 0.1, "hit a wall to gain an upward momentum");
         StdDraw.textLeft(0, Game.maxY * 0.05, "hold right and left arrow keys to move");
-        StdDraw.textLeft(0, 0, "press q to quit");
+        StdDraw.textLeft(0, 0, "press q to quit, press r to restart the level");
         StdDraw.textLeft(maxX * 0.8, 0, "high score - " + (int) currentMilestone);
     }
 
@@ -88,6 +88,6 @@ public class Information extends TemplateObject
 
     @Override
     public void reset() {
-        currentMilestone = startMilestone;
+        currentMilestone = 0;
     }
 }

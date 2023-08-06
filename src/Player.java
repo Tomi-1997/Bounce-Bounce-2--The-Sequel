@@ -25,7 +25,17 @@ public class Player extends TemplateObject
     public void draw()
     {
         StdDraw.setPenColor(cl);
-        StdDraw.filledCircle(x, y, radius);
+
+        double vxNorm = Math.abs(vx / 3.5);
+        double vyNorm = Math.abs(vy / (Game.maxVY / 2));
+
+        if (vxNorm < 1) vxNorm = 1;
+        if (vyNorm < 1) vyNorm = 1;
+
+        StdDraw.filledEllipse(x, y, radius * vxNorm, radius * vyNorm);
+
+        // Splat
+//        StdDraw.filledEllipse(x, y, radius, radius / 2);
     }
 
     @Override
@@ -55,7 +65,9 @@ public class Player extends TemplateObject
     }
 
     @Override
-    public void reset() {
-
+    public void reset()
+    {
+        //
+        score = 0;
     }
 }

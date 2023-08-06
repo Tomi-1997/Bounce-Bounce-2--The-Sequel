@@ -12,7 +12,7 @@ public class Game
     private double lastCollision = 0;
     private boolean restartAvailable = true;
 
-    private static long FPS = 1000 / 60;
+    private static final long FPS = 1000 / 60;
     public static final int obstacles = 10, maxX = 800, maxY = 400, obstacleEPS = 20, pEPS = 5, hitReward = 10;
     public static double G = 0.15;
     public static final double minVY = -10;
@@ -24,11 +24,9 @@ public class Game
     public Game()
     {
         TO = Collections.synchronizedCollection(new ArrayList<>());
-
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
-
     }
 
     private void createInformation()
@@ -38,10 +36,7 @@ public class Game
     }
 
     private void createObstacles(int x, int y)
-    {//        US.removeIf( u -> u.getClass() == Obstacle.class );
-//        DS.removeIf( u -> u.getClass() == Obstacle.class );
-
-
+    {
         for (int i = 0; i < obstacles; i++)
         {
             int w = randInt(50, 60);
@@ -89,12 +84,15 @@ public class Game
     private void restart()
     {
         restartAvailable = false;
+        /*
+            Print text to user indicating a reset is near
+         */
         int duration = 1000;
         int dots = 3;
-        String text = "Restarting";
+        StringBuilder text = new StringBuilder("Restarting");
         for (int i = 0; i <= dots; i++)
         {
-            final String lambdaText = text;
+            final String lambdaText = text.toString();
             TemplateObject d = new TemplateObject()
             {
                 @Override
@@ -111,32 +109,37 @@ public class Game
             delay(duration / dots);
             rm(d);
             TO.remove(d);
-            text = text + ".";
+            text.append(".");
         }
-//
-//        int dropDuration = maxY / 2;
-//        createObstacles((int) (maxX * 0.25), (int) (maxY * 1.5));
-//
-//        /*
-//            TODO FIX REMOVAL OF OLD BLOCKS
-//         */
-//        for (int i = 0; i < dropDuration; i++)
-//        {
-//            synchronized (US)
-//            {
-//                for (Updatable u : US)
-//                {
-//                    if (u.getClass() != Obstacle.class) continue;
-//                    Obstacle o = (Obstacle) u;
-//                    o.y = o.y - 2;
-//                }
-//            }
-//            delay(10);
-//        }
-//
-//
-//        delay(1000);
-//        System.out.println(US.size());
+
+        /*
+            Perform reset() for each object
+         */
+
+        for (TemplateObject to : TO)
+            to.reset();
+
+        int dropDuration = maxY / 2;
+        createObstacles((int) (maxX * 0.4), (int) (maxY * 1.5));
+
+        for (int i = 0; i < dropDuration; i++)
+        {
+            synchronized (TO)
+            {
+                for (TemplateObject u : TO)
+                {
+                    if (u.getClass() != Obstacle.class) continue;
+                    Obstacle o = (Obstacle) u;
+                    o.y = o.y - 2;
+                }
+            }
+            delay(10);
+        }
+
+
+        delay(1000);
+
+        TO.removeIf(TemplateObject::isReset);
         restartAvailable = true;
     }
 
@@ -156,12 +159,15 @@ public class Game
         /*
             Find player and obstacles from updatable \ drawables
          */
-        for (Updatable u : TO)
+        synchronized (TO)
         {
+            for (TemplateObject u : TO)
+            {
             if (u.getClass() == Player.class)
                 p = (Player) u;
             if (u.getClass() == Obstacle.class)
                 arr.add((Obstacle) u);
+            }
         }
 
         if (p == null) return;
@@ -180,6 +186,7 @@ public class Game
          */
         if (p.y > maxY * 1.05)
         {
+            StdDraw.setPenColor(p.cl);
             StdDraw.line(p.x, maxY * 1.1, p.x, maxY * 0.9);
         }
 

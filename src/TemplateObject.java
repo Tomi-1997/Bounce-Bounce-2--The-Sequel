@@ -4,6 +4,12 @@ public abstract class TemplateObject implements Drawable, Updatable, Pressable, 
 {
     double x, y, vx, vy;
     Color cl;
+    boolean isReset = false;
+
+    public boolean isReset()
+    {
+        return isReset;
+    }
 
     public double getX() {
         return x;
