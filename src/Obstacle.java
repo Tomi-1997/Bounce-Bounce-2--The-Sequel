@@ -3,7 +3,7 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.util.Arrays;
 
-public class Obstacle implements Drawable, Updatable, simpleObject
+public class Obstacle extends TemplateObject
 {
     double x, y, halfWidth, halfHeight, speed;
     Color cl;
@@ -96,20 +96,6 @@ public class Obstacle implements Drawable, Updatable, simpleObject
         y = y + 0.05 * dir;
     }
 
-    @Override
-    public double getX()
-    {
-        //
-        return x;
-    }
-
-    @Override
-    public double getY()
-    {
-        //
-        return y;
-    }
-
     public void applyHit()
     {
         //
@@ -140,5 +126,15 @@ public class Obstacle implements Drawable, Updatable, simpleObject
             Game.delay();
             str = str + str_inc; // accelerate
         }
+    }
+
+    @Override
+    public void onPress() {
+
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

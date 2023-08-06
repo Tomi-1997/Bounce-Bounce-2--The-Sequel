@@ -3,7 +3,7 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class Player implements Drawable, Updatable, simpleObject
+public class Player extends TemplateObject
 {
     double x, y, radius;
     double vx, vy;
@@ -50,14 +50,12 @@ public class Player implements Drawable, Updatable, simpleObject
     }
 
     @Override
-    public double getX()
-    {
-        return x;
+    public void onPress() {
+
     }
 
     @Override
-    public double getY()
-    {
-        return y;
+    public void reset() {
+
     }
 }

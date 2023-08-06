@@ -1,17 +1,13 @@
-import edu.princeton.cs.introcs.Draw;
 import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 public class Game
 {
-    private final Collection<Updatable> US;
-    private final Collection<Drawable>  DS;
+    private final Collection<TemplateObject> TO;
     private Player p;
     private double lastCollision = 0;
     private boolean restartAvailable = true;
@@ -27,8 +23,7 @@ public class Game
 
     public Game()
     {
-        US = Collections.synchronizedCollection(new ArrayList<>());
-        DS = Collections.synchronizedCollection(new ArrayList<>());
+        TO = Collections.synchronizedCollection(new ArrayList<>());
 
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
@@ -39,14 +34,13 @@ public class Game
     private void createInformation()
     {
         Information i = new Information(maxX, maxY, this.p);
-        US.add(i);
-        DS.add(i);
+        TO.add(i);
     }
 
     private void createObstacles(int x, int y)
-    {
-//        US.removeIf( u -> u.getClass() == Obstacle.class );
+    {//        US.removeIf( u -> u.getClass() == Obstacle.class );
 //        DS.removeIf( u -> u.getClass() == Obstacle.class );
+
 
         for (int i = 0; i < obstacles; i++)
         {
@@ -54,8 +48,7 @@ public class Game
             int h = randInt(5, 10);
             double speed = 1.5 + Math.random();
             Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
-            US.add(o);
-            DS.add(o);
+            TO.add(o);
 
             x = x + randInt(150, 200);
             y = y + randInt(-30, 30);
@@ -65,15 +58,8 @@ public class Game
     private void createPlayer()
     {
         Player p = new Player(0, maxY / 2.0, 5);
-        US.add(p);
-        DS.add(p);
+        TO.add(p);
         this.p = p;
-    }
-
-    private int randInt(int a, int b)
-    {
-        //
-        return (int) (Math.random() * (b - a)) + a;
     }
 
     public void run()
@@ -89,10 +75,15 @@ public class Game
             iterate();
             StdDraw.show(0);
             delay();
-
-            if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); };
         }
         System.exit(0);
+    }
+
+    private void iterate()
+    {
+        synchronized (TO) { for (Updatable u : TO) u.update(); }
+        synchronized (TO) { for (Drawable  d : TO) d.draw(); }
+        checkCollision();
     }
 
     private void restart()
@@ -104,62 +95,56 @@ public class Game
         for (int i = 0; i <= dots; i++)
         {
             final String lambdaText = text;
-            Drawable d = () -> StdDraw.textLeft(maxX / 2.3, maxY / 2.0, lambdaText);
-            DS.add(d);
+            TemplateObject d = new TemplateObject()
+            {
+                @Override
+                public void update() {}
+                @Override
+                public void reset() {}
+                @Override
+                public void onPress() {}
+                @Override
+                public void draw() { StdDraw.textLeft(maxX / 2.3, maxY / 1.5, lambdaText); }
+            };
+
+            add(d);
             delay(duration / dots);
-            DS.remove(d);
+            rm(d);
+            TO.remove(d);
             text = text + ".";
         }
-
-        int dropDuration = maxY / 2;
-        createObstacles((int) (maxX * 0.25), (int) (maxY * 1.5));
-
-        /*
-            TODO FIX REMOVAL OF OLD BLOCKS
-         */
-        for (int i = 0; i < dropDuration; i++)
-        {
-            synchronized (US)
-            {
-                for (Updatable u : US)
-                {
-                    if (u.getClass() != Obstacle.class) continue;
-                    Obstacle o = (Obstacle) u;
-                    o.y = o.y - 2;
-                }
-            }
-            delay(10);
-        }
-
-
-        delay(1000);
-        System.out.println(US.size());
+//
+//        int dropDuration = maxY / 2;
+//        createObstacles((int) (maxX * 0.25), (int) (maxY * 1.5));
+//
+//        /*
+//            TODO FIX REMOVAL OF OLD BLOCKS
+//         */
+//        for (int i = 0; i < dropDuration; i++)
+//        {
+//            synchronized (US)
+//            {
+//                for (Updatable u : US)
+//                {
+//                    if (u.getClass() != Obstacle.class) continue;
+//                    Obstacle o = (Obstacle) u;
+//                    o.y = o.y - 2;
+//                }
+//            }
+//            delay(10);
+//        }
+//
+//
+//        delay(1000);
+//        System.out.println(US.size());
         restartAvailable = true;
     }
 
     private boolean isRunning()
     {
         //
+        if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); }
         return !StdDraw.isKeyPressed(KeyEvent.VK_Q);
-    }
-
-    public static void delay()
-    {
-        //
-        try {Thread.sleep(FPS);} catch (InterruptedException e) {e.printStackTrace();}
-    }
-
-    public static void delay(long millis)
-    {
-        //
-        try {Thread.sleep(millis);} catch (InterruptedException e) {e.printStackTrace();}
-    }
-
-    private void iterate()
-    {
-        synchronized (US) { for (Updatable u : US) u.update(); }
-        synchronized (DS) { for (Drawable  d : DS) d.draw(); }
-        checkCollision();
     }
 
     private void checkCollision()
@@ -171,7 +156,7 @@ public class Game
         /*
             Find player and obstacles from updatable \ drawables
          */
-        for (Updatable u : US)
+        for (Updatable u : TO)
         {
             if (u.getClass() == Player.class)
                 p = (Player) u;
@@ -227,6 +212,18 @@ public class Game
         }
     }
 
+    public static void delay()
+    {
+        //
+        try {Thread.sleep(FPS);} catch (InterruptedException e) {e.printStackTrace();}
+    }
+
+    public static void delay(long millis)
+    {
+        //
+        try {Thread.sleep(millis);} catch (InterruptedException e) {e.printStackTrace();}
+    }
+
     private void generateDust(Obstacle o)
     {
         new Thread(() -> generateDust_(o)).start();
@@ -237,25 +234,48 @@ public class Game
     {
         int fireworksNum = 10;
         double radius = 5;
-        ArrayList<Firework> obstacleHitDust = new ArrayList<>();
+        ArrayList<TemplateObject> obstacleHitDust = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
             obstacleHitDust.add(new Firework(o.x, o.y, radius, false, o.cl));
         }
 
-        for (Firework f : obstacleHitDust)
-        {
-            US.add(f);
-            DS.add(f);
-        }
-
+        addAll(obstacleHitDust);
         delay(2 * 1000);
-
-        for (Firework f : obstacleHitDust)
-        {
-            US.remove(f);
-            DS.remove(f);
-        }
+        rmAll(obstacleHitDust);
 
     }
+
+    private void rm(TemplateObject d)
+    {
+        synchronized (TO) {
+            TO.remove(d);
+        }
+    }
+
+    private void add(TemplateObject d)
+    {
+        synchronized (TO) {
+            TO.add(d);
+        }
+    }
+
+    private void rmAll(ArrayList<TemplateObject> obstacleHitDust)
+    {
+        //
+        synchronized (TO) {TO.removeAll(obstacleHitDust); }
+    }
+
+    private void addAll(ArrayList<TemplateObject> obstacleHitDust)
+    {
+        //
+        synchronized (TO) {TO.addAll(obstacleHitDust); }
+    }
+
+    private int randInt(int a, int b)
+    {
+        //
+        return (int) (Math.random() * (b - a)) + a;
+    }
+
 }

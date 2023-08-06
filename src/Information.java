@@ -2,13 +2,13 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Information implements Drawable, Updatable
+public class Information extends TemplateObject
 {
     double maxX, maxY;
     Player p;
 
     ArrayList<Firework> fireworks;
-    int titleSize = 60, currentMilestone = 100;
+    int titleSize = 60, startMilestone = 100, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
     public Information(double maxX, double maxY, Player p)
@@ -44,13 +44,14 @@ public class Information implements Drawable, Updatable
         StdDraw.textLeft(0, Game.maxY * 0.1, "hit a wall to gain an upward momentum");
         StdDraw.textLeft(0, Game.maxY * 0.05, "hold right and left arrow keys to move");
         StdDraw.textLeft(0, 0, "press q to quit");
+        StdDraw.textLeft(maxX * 0.8, 0, "high score - " + (int) currentMilestone);
     }
 
     @Override
     public void update()
     {
         p.score += 0.1;
-        if (!atMilestone && p.score >= currentMilestone) new Thread(this::setMilestone).start();
+        if (!atMilestone && p.score >= currentMilestone + milestoneInc) new Thread(this::setMilestone).start();
 
         /*
             Update fireworks
@@ -63,7 +64,7 @@ public class Information implements Drawable, Updatable
         atMilestone = true;
         generateFireworks(); // launch fireworks when reaching milestone
         titleSize = 100;    // big title
-        currentMilestone = currentMilestone + 100; // Set next milestone
+        currentMilestone = currentMilestone + milestoneInc; // Set next milestone
         Game.delay(3 * 1000); // wait a bit, then revert to normal
         atMilestone = false;
         titleSize = 60;
@@ -78,5 +79,15 @@ public class Information implements Drawable, Updatable
         {
             fireworks.add(new Firework(maxX / 2, maxY / 10, radius, true));
         }
+    }
+
+    @Override
+    public void onPress() {
+
+    }
+
+    @Override
+    public void reset() {
+        currentMilestone = startMilestone;
     }
 }

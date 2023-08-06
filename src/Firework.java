@@ -2,7 +2,7 @@ import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 
-public class Firework implements Updatable, Drawable
+public class Firework extends TemplateObject
 {
     double x, y, vx, vy;
     Color cl;
@@ -48,5 +48,15 @@ public class Firework implements Updatable, Drawable
         vy = vy - Game.G * 0.05;
         vx = vx - Game.G * 0.01;
         lifetime--;
+    }
+
+    @Override
+    public void onPress() {
+
+    }
+
+    @Override
+    public void reset() {
+
     }
 }
