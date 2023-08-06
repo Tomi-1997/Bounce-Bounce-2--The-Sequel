@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+// TODO Slowly speed up blocks based on score, reset on fall
 public class Game
 {
     private final Collection<TemplateObject> TO;
