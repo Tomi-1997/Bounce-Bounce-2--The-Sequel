@@ -181,7 +181,7 @@ public class Game
         ArrayList<Firework> obstacleHitDust = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
-            obstacleHitDust.add(new Firework(o.x, o.y, radius, false));
+            obstacleHitDust.add(new Firework(o.x, o.y, radius, false, o.cl));
         }
 
         for (Firework f : obstacleHitDust)

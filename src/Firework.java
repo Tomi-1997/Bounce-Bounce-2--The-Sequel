@@ -1,7 +1,11 @@
 import edu.princeton.cs.introcs.StdDraw;
+
+import java.awt.*;
+
 public class Firework implements Updatable, Drawable
 {
     double x, y, vx, vy;
+    Color cl;
     int lifetime;
     public Firework(double x, double y, double radius, boolean circular)
     {
@@ -20,10 +24,17 @@ public class Firework implements Updatable, Drawable
         lifetime = (int) (Math.random() * 150) + 50;
     }
 
+    public Firework(double x, double y, double radius, boolean circular, Color cl)
+    {
+        this(x, y, radius, circular);
+        this.cl = cl;
+    }
+
     @Override
     public void draw()
     {
         //
+        if (cl != null) StdDraw.setPenColor(cl);
         if (lifetime > 0) StdDraw.point(x, y);
     }
 

@@ -17,13 +17,17 @@ public class Obstacle implements Drawable, Updatable, simpleObject
         this.speed = speed;
 
         /*
-            Generate a random colour and brighten it
+            Generate a random colour, brighten if needed.
          */
         int r = (int) (Math.random() * 255);
         int g = (int) (Math.random() * 255);
         int b = (int) (Math.random() * 255);
 
         int temp;
+
+        /*
+            Blue component of a colour is much higher than red - swap values
+         */
         if (b > r + 100)
         {
             temp = b;
@@ -31,6 +35,9 @@ public class Obstacle implements Drawable, Updatable, simpleObject
             r = temp;
         }
 
+        /*
+            Blue component of a colour is much higher than green - swap values
+         */
         if (b > g + 100)
         {
             temp = b;
@@ -38,7 +45,7 @@ public class Obstacle implements Drawable, Updatable, simpleObject
             g = temp;
         }
 
-        if (r + g + b < 200)
+        while (r + g + b < 200)
         {
             r = r + 50;
             g = g + 50;
