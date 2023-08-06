@@ -3,11 +3,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Game
 {
-    private final ArrayList<Updatable> US;
-    private final ArrayList<Drawable>  DS;
+    private final Collection<Updatable> US;
+    private final Collection<Drawable>  DS;
     private double lastCollision = 0;
 
     private static final long FPS = 1000 / 60;
@@ -16,8 +18,8 @@ public class Game
 
     public Game()
     {
-        US = new ArrayList<>();
-        DS = new ArrayList<>();
+        US = Collections.synchronizedCollection(new ArrayList<>());
+        DS = Collections.synchronizedCollection(new ArrayList<>());
 
         /*
             Create player

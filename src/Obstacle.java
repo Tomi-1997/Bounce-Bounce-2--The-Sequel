@@ -22,7 +22,29 @@ public class Obstacle implements Drawable, Updatable, simpleObject
         int r = (int) (Math.random() * 255);
         int g = (int) (Math.random() * 255);
         int b = (int) (Math.random() * 255);
-        cl = new Color(r, g, b).brighter();
+
+        int temp;
+        if (b > r + 100)
+        {
+            temp = b;
+            b = r;
+            r = temp;
+        }
+
+        if (b > g + 100)
+        {
+            temp = b;
+            b = g;
+            g = temp;
+        }
+
+        if (r + g + b < 200)
+        {
+            r = r + 50;
+            g = g + 50;
+            b = b + 15;
+        }
+        cl = new Color(r, g, b);
 
         /*
             Slowly float upwards and downwards. Switch direction after X amount of time
@@ -83,6 +105,7 @@ public class Obstacle implements Drawable, Updatable, simpleObject
 
     public void applyHit()
     {
+        System.out.println(this.cl);
         //
         new Thread(this::applyHit_).start();
     }
