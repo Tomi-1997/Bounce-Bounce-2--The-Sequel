@@ -112,7 +112,6 @@ public class Obstacle implements Drawable, Updatable, simpleObject
 
     public void applyHit()
     {
-        System.out.println(this.cl);
         //
         new Thread(this::applyHit_).start();
     }

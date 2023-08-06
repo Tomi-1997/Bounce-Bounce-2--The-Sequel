@@ -5,6 +5,7 @@ import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 public class Game
 {
@@ -98,8 +99,9 @@ public class Game
 
     private void iterate()
     {
-        for (Updatable u : US) u.update();
-        for (Drawable  d : DS) d.draw();
+
+        for (Iterator<Updatable> it = US.iterator(); it.hasNext(); ){Updatable u = it.next();u.update();}
+        for (Iterator<Drawable> it = DS.iterator(); it.hasNext(); ) {Drawable d = it.next();d.draw();}
         checkCollision();
     }
 
@@ -110,7 +112,7 @@ public class Game
         ArrayList<Obstacle> arr = new ArrayList<>();
 
         /*
-            Find player and obstacles from updatables
+            Find player and obstacles from updatable \ drawables
          */
         for (Updatable u : US)
         {
