@@ -50,24 +50,24 @@ public class Player extends TemplateObject
         if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT)) vx = Math.max(-Game.maxVX, vx - Game.VX);
     }
 
-    public void applyHit()
+    @Override
+    public void reset()
+    {
+        //
+        score = 0;
+    }
+
+    public void collide(TemplateObject to)
+    {
+        if (to.getClass() == Obstacle.class) collide( (Obstacle) to);
+    }
+
+    public void collide(Obstacle o)
     {
         vy = -vy;
         if (vy < Game.hitVY)
             vy = Game.hitVY;
         if (vy > Game.maxVY)
             vy = Game.maxVY;
-    }
-
-    @Override
-    public void onPress() {
-
-    }
-
-    @Override
-    public void reset()
-    {
-        //
-        score = 0;
     }
 }

@@ -96,13 +96,7 @@ public class Obstacle extends TemplateObject
         y = y + 0.05 * dir;
     }
 
-    public void applyHit()
-    {
-        //
-        new Thread(this::applyHit_).start();
-    }
-
-    public void applyHit_()
+    public void recoil()
     {
         /*
             Hit by player, drop abruptly and slowly stabilize. Then accelerate to the previous location.
@@ -129,9 +123,18 @@ public class Obstacle extends TemplateObject
     }
 
     @Override
-    public void onPress() {
-
+    public void collide(TemplateObject to)
+    {
+        //
+        if (to.getClass() == Player.class) collide( (Player) to);
     }
+
+    public void collide(Player to)
+    {
+        //
+        new Thread(this::recoil).start();
+    }
+
 
     @Override
     public void reset() {

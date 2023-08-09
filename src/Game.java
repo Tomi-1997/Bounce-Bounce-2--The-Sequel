@@ -206,8 +206,8 @@ public class Game
             if (p.x + p.radius + pEPS > o.x - o.halfWidth && p.x - p.radius + pEPS < o.x + o.halfWidth &&
                     p.y + p.radius - pEPS > o.y - o.halfHeight && p.y - p.radius - pEPS < o.y + o.halfHeight)
             {
-                p.applyHit();
-                o.applyHit();
+                p.collide(o);
+                o.collide(p);
                 lastCollision = System.currentTimeMillis();
                 Color temp = o.cl;
                 o.cl = p.cl;
@@ -215,9 +215,13 @@ public class Game
                 p.score += hitReward;
 
                 generateDust(o);
-                return;
+                break;
             }
         }
+
+        /*
+            Check if the player hit a launch pad
+         */
     }
 
     public static void delay()

@@ -49,14 +49,4 @@ public class Firework extends TemplateObject
         vx = vx - Game.G * 0.01;
         lifetime--;
     }
-
-    @Override
-    public void onPress() {
-
-    }
-
-    @Override
-    public void reset() {
-
-    }
 }

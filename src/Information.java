@@ -82,12 +82,8 @@ public class Information extends TemplateObject
     }
 
     @Override
-    public void onPress() {
-
-    }
-
-    @Override
-    public void reset() {
+    public void reset()
+    {
         currentMilestone = 0;
     }
 }
