@@ -16,14 +16,19 @@ public class Game
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
-        try {startMusic();} catch (Exception e) {hasMusic = false; e.printStackTrace();}
+        try {sound("Minibit.wav", true);} catch (Exception e) {hasMusic = false; e.printStackTrace();}
     }
 
     private final Collection<TemplateObject> TO;
     private Player p;
 
     private static final long FPS = 1000 / 60;
-    public static final int obstacles = 10, maxX = 800, maxY = 400, obstacleEPS = 20, pEPS = 5, hitReward = 10;
+    public static final int obstacles = 10;
+    public static final int maxX = 800;
+    public static final int maxY = 400;
+    public static final int obstacleEPS = 20;
+    public static final int pEPS = 5;
+    public static final int hitReward = 10;
 
     public static double G = 0.15;
     public static final double minVY = -10;
@@ -32,22 +37,22 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.001;
+    public static double speedMultiplier = 0.003;
+    public static final double maxSpeed = 8;
     public static double score = 0;
     private double lastCollision = 0;
 
     public static boolean hasMusic = true;
     private boolean restartAvailable = true;
 
-
-    private void startMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException
+    private void sound(String filename, boolean loop) throws LineUnavailableException, IOException, UnsupportedAudioFileException
     {
-        URL url = this.getClass().getClassLoader().getResource("Minibit.wav");
+        URL url = this.getClass().getClassLoader().getResource("sound\\" + filename);
         assert url != null;
         AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
         Clip clip = AudioSystem.getClip();
         clip.open(audioIn);
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
 
@@ -235,6 +240,9 @@ public class Game
                 p.cl = temp;
                 score += hitReward;
 
+                double beepProb = 0.5;
+                beepSound(beepProb);
+
                 generateDust(o);
                 break;
             }
@@ -245,16 +253,24 @@ public class Game
          */
     }
 
+    private void beepSound(double beepProb)
+    {
+        if (Math.random() > beepProb) return;
+        String filename = "beep" + randInt(1, 5) + ".wav";
+        try {sound(filename, false);} catch (Exception e) {e.printStackTrace();}
+
+    }
+
     private void resetScore()
     {
         long delayTime = 20;
-        delayTime = Math.max(( long) (10 * delayTime / (score + 1)), 1);
+        delayTime = Math.max(( long) (20 * delayTime / (score + 1)), 1);
         long finalDelayTime = delayTime;
         new Thread( () ->
         {
-            while (score > 0)
-            {score--; delay(finalDelayTime);}
-            score = 0;
+            double scoreAtFall = score;
+            while (scoreAtFall > 0)
+            {scoreAtFall--; score--; delay(finalDelayTime);}
         } ).start();
     }
 

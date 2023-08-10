@@ -1,11 +1,9 @@
 import edu.princeton.cs.introcs.StdDraw;
-
 import java.awt.*;
-import java.util.Arrays;
 
 public class Obstacle extends TemplateObject
 {
-    double x, y, halfWidth, halfHeight, startingSpeed, speed;
+    double x, y, halfWidth, halfHeight, speed;
     Color cl;
     int dir;
     public Obstacle(double x, double y, double halfWidth, double halfHeight, double speed)
@@ -15,7 +13,6 @@ public class Obstacle extends TemplateObject
         this.halfWidth = halfWidth;
         this.halfHeight = halfHeight;
         this.speed = speed;
-        this.startingSpeed = speed;
 
         /*
             Generate a random colour, brighten if needed.
@@ -93,7 +90,9 @@ public class Obstacle extends TemplateObject
         /*
             Go left, float up/down
          */
-        x = x - speed - Game.speedMultiplier * Game.score;
+        double currSpeed = speed + Game.speedMultiplier * Game.score;
+        if (currSpeed > Game.maxSpeed) currSpeed = Game.maxSpeed;
+        x = x - currSpeed;
         y = y + 0.05 * dir;
     }
 
@@ -125,12 +124,6 @@ public class Obstacle extends TemplateObject
 
     @Override
     public void collide(TemplateObject to)
-    {
-        //
-        if (to.getClass() == Player.class) collide( (Player) to);
-    }
-
-    public void collide(Player to)
     {
         //
         new Thread(this::recoil).start();
