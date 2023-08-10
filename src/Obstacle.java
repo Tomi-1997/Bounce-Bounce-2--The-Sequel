@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class Obstacle extends TemplateObject
 {
-    double x, y, halfWidth, halfHeight, speed;
+    double x, y, halfWidth, halfHeight, startingSpeed, speed;
     Color cl;
     int dir;
     public Obstacle(double x, double y, double halfWidth, double halfHeight, double speed)
@@ -15,6 +15,7 @@ public class Obstacle extends TemplateObject
         this.halfWidth = halfWidth;
         this.halfHeight = halfHeight;
         this.speed = speed;
+        this.startingSpeed = speed;
 
         /*
             Generate a random colour, brighten if needed.
@@ -92,7 +93,7 @@ public class Obstacle extends TemplateObject
         /*
             Go left, float up/down
          */
-        x = x - speed;
+        x = x - speed - Game.speedMultiplier * Game.score;
         y = y + 0.05 * dir;
     }
 
@@ -137,7 +138,8 @@ public class Obstacle extends TemplateObject
 
 
     @Override
-    public void reset() {
+    public void reset()
+    {
         isReset = true;
     }
 }

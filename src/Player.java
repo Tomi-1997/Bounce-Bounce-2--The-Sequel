@@ -8,7 +8,6 @@ public class Player extends TemplateObject
     double x, y, radius;
     double vx, vy;
     public Color cl;
-    double score;
 
     public Player(double x, double y, double radius)
     {
@@ -18,7 +17,6 @@ public class Player extends TemplateObject
         this.vx = 2;
         this.vy = 5;
         cl = Color.WHITE;
-        this.score = 0;
     }
 
     @Override
@@ -54,7 +52,6 @@ public class Player extends TemplateObject
     public void reset()
     {
         //
-        score = 0;
     }
 
     public void collide(TemplateObject to)

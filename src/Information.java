@@ -8,7 +8,7 @@ public class Information extends TemplateObject
     Player p;
 
     ArrayList<Firework> fireworks;
-    int titleSize = 60, startMilestone = 100, currentMilestone = 0, milestoneInc = 100;
+    int titleSize = 60, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
     public Information(double maxX, double maxY, Player p)
@@ -27,7 +27,7 @@ public class Information extends TemplateObject
          */
         Font font = new Font("Monospaced", Font.BOLD, titleSize);
         StdDraw.setFont(font);
-        String title = (int) p.score + "";
+        String title = (int) Game.score + "";
         StdDraw.text(maxX / 2, maxY / 10, title);
 
         /*
@@ -50,8 +50,8 @@ public class Information extends TemplateObject
     @Override
     public void update()
     {
-        p.score += 0.1;
-        if (!atMilestone && p.score >= currentMilestone + milestoneInc) new Thread(this::setMilestone).start();
+        Game.score += 0.1;
+        if (!atMilestone && Game.score >= currentMilestone + milestoneInc) new Thread(this::setMilestone).start();
 
         /*
             Update fireworks
@@ -61,8 +61,8 @@ public class Information extends TemplateObject
 
     private void setMilestone()
     {
-        atMilestone = true;
         generateFireworks(); // launch fireworks when reaching milestone
+        atMilestone = true;
         titleSize = 100;    // big title
         currentMilestone = currentMilestone + milestoneInc; // Set next milestone
         Game.delay(3 * 1000); // wait a bit, then revert to normal

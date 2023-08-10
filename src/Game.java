@@ -8,25 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-// TODO Slowly speed up blocks based on score, reset on fall
 public class Game
 {
-    private final Collection<TemplateObject> TO;
-    private Player p;
-    private double lastCollision = 0;
-    private boolean restartAvailable = true;
-
-    private static final long FPS = 1000 / 60;
-    public static final int obstacles = 10, maxX = 800, maxY = 400, obstacleEPS = 20, pEPS = 5, hitReward = 10;
-    public static double G = 0.15;
-    public static final double minVY = -10;
-    public static final double maxVY = 7;
-    public static final double maxVX = 4;
-    public static final double VX = 0.2;
-    public static final double hitVY = 5;
-    final double baseSpeed = 1.5;
-    public static boolean hasMusic = true;
-
     public Game()
     {
         TO = Collections.synchronizedCollection(new ArrayList<>());
@@ -35,6 +18,27 @@ public class Game
         createInformation();
         try {startMusic();} catch (Exception e) {hasMusic = false; e.printStackTrace();}
     }
+
+    private final Collection<TemplateObject> TO;
+    private Player p;
+
+    private static final long FPS = 1000 / 60;
+    public static final int obstacles = 10, maxX = 800, maxY = 400, obstacleEPS = 20, pEPS = 5, hitReward = 10;
+
+    public static double G = 0.15;
+    public static final double minVY = -10;
+    public static final double maxVY = 7;
+    public static final double maxVX = 4;
+    public static final double VX = 0.2;
+    public static final double hitVY = 5;
+    final double baseSpeed = 1.5;
+    public static double speedMultiplier = 0.001;
+    public static double score = 0;
+    private double lastCollision = 0;
+
+    public static boolean hasMusic = true;
+    private boolean restartAvailable = true;
+
 
     private void startMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException
     {
@@ -196,7 +200,7 @@ public class Game
         if (p.y < -maxY * 0.2)
         {
             p.vy = maxY / 40.0 + 2;
-            p.score = 0;
+            resetScore();
         }
 
         /*
@@ -229,7 +233,7 @@ public class Game
                 Color temp = o.cl;
                 o.cl = p.cl;
                 p.cl = temp;
-                p.score += hitReward;
+                score += hitReward;
 
                 generateDust(o);
                 break;
@@ -239,6 +243,19 @@ public class Game
         /*
             Check if the player hit a launch pad
          */
+    }
+
+    private void resetScore()
+    {
+        long delayTime = 20;
+        delayTime = Math.max(( long) (10 * delayTime / (score + 1)), 1);
+        long finalDelayTime = delayTime;
+        new Thread( () ->
+        {
+            while (score > 0)
+            {score--; delay(finalDelayTime);}
+            score = 0;
+        } ).start();
     }
 
     public static void delay()
