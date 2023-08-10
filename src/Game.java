@@ -5,8 +5,10 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 public class Game
 {
@@ -37,7 +39,7 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.003;
+    public static double speedMultiplier = 0.007;
     public static final double maxSpeed = 8;
     public static double score = 0;
     private double lastCollision = 0;
@@ -179,25 +181,17 @@ public class Game
 
     private void checkCollision()
     {
-
-        Player p = null;
-        ArrayList<Obstacle> arr = new ArrayList<>();
-
         /*
-            Find player and obstacles from updatable \ drawables
+            Find obstacles from updatable \ drawables
          */
+        ArrayList<Obstacle> arr = new ArrayList<>();
         synchronized (TO)
         {
-            for (TemplateObject u : TO)
+            for (TemplateObject to : TO)
             {
-            if (u.getClass() == Player.class)
-                p = (Player) u;
-            if (u.getClass() == Obstacle.class)
-                arr.add((Obstacle) u);
+                if (to.getClass() == Obstacle.class) arr.add((Obstacle) to);
             }
         }
-
-        if (p == null) return;
 
         /*
             If the player drops below screen - reset score and launch him back
