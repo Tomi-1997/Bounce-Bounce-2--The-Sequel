@@ -25,6 +25,7 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
+    public static boolean hasMusic = true;
 
     public Game()
     {
@@ -32,7 +33,7 @@ public class Game
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
-        try {startMusic();} catch (Exception e) {e.printStackTrace();}
+        try {startMusic();} catch (Exception e) {hasMusic = false; e.printStackTrace();}
     }
 
     private void startMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException
