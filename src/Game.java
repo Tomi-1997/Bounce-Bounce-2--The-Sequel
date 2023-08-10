@@ -1,6 +1,9 @@
 import edu.princeton.cs.introcs.StdDraw;
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +24,7 @@ public class Game
     public static final double maxVX = 4;
     public static final double VX = 0.2;
     public static final double hitVY = 5;
+    final double baseSpeed = 1.5;
 
     public Game()
     {
@@ -28,6 +32,18 @@ public class Game
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
+        try {startMusic();} catch (Exception e) {e.printStackTrace();}
+    }
+
+    private void startMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException
+    {
+        URL url = this.getClass().getClassLoader().getResource("Minibit.wav");
+        assert url != null;
+        AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioIn);
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        clip.start();
     }
 
     private void createInformation()
@@ -42,7 +58,7 @@ public class Game
         {
             int w = randInt(50, 60);
             int h = randInt(5, 10);
-            double speed = 1.5 + Math.random();
+            double speed = baseSpeed + Math.random();
             Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
             TO.add(o);
 
