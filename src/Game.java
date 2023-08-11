@@ -29,8 +29,8 @@ public class Game
     public static final int obstacles = 10;
     public static final int maxX = 800;
     public static final int maxY = 400;
-    public static final int obstacleEPS = 20;
-    public static final int pEPS = 5;
+    public static final int obstacleEPS = 50; //
+    public static final int pEPS = 10;
     public static final int hitReward = 10;
 
     public static double G = 0.15;
@@ -227,8 +227,8 @@ public class Game
          */
         for (Obstacle o : arr)
         {
-            if (p.x + p.radius + pEPS > o.x - o.halfWidth && p.x - p.radius + pEPS < o.x + o.halfWidth &&
-                    p.y + p.radius - pEPS > o.y - o.halfHeight && p.y - p.radius - pEPS < o.y + o.halfHeight)
+            if (p.x + p.radius + pEPS > o.x - o.halfWidth && p.x - p.radius - pEPS < o.x + o.halfWidth &&
+                    p.y + p.radius > o.y - o.halfHeight && p.y - p.radius < o.y + o.halfHeight)
             {
                 p.collide(o);
                 o.collide(p);

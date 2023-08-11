@@ -24,6 +24,9 @@ public class Player extends TemplateObject
     {
         StdDraw.setPenColor(cl);
 
+        /*
+            Draw a deformed circle based on current velocity
+         */
         double vxNorm = Math.abs(vx / 3.5);
         double vyNorm = Math.abs(vy / (Game.maxVY / 2));
 
@@ -31,9 +34,6 @@ public class Player extends TemplateObject
         if (vyNorm < 1) vyNorm = 1;
 
         StdDraw.filledEllipse(x, y, radius * vxNorm, radius * vyNorm);
-
-        // Splat
-//        StdDraw.filledEllipse(x, y, radius, radius / 2);
     }
 
     @Override
@@ -44,8 +44,20 @@ public class Player extends TemplateObject
 
         vy = Math.max(vy - Game.G, Game.minVY);
 
-        if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT)) vx = Math.min(Game.maxVX, vx + Game.VX);
-        if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT)) vx = Math.max(-Game.maxVX, vx - Game.VX);
+        /*
+            Changing direction has more effect on velocity up to a certain limit.
+         */
+        double strength = Game.VX;
+        if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT))
+        {
+            if (vx < 0) strength = strength * 2; // Pressing right but current direction is left
+            vx = Math.min(Game.maxVX, vx + strength);
+        }
+        if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT))
+        {
+            if (vx > 0) strength = strength * 2; // Pressing left but current direction is right
+            vx = Math.max(-Game.maxVX, vx - strength);
+        }
     }
 
     @Override
@@ -61,6 +73,9 @@ public class Player extends TemplateObject
 
     public void collide(Obstacle o)
     {
+        /*
+            Hit obstacle, flip y velocity between a defined limit
+         */
         vy = -vy;
         if (vy < Game.hitVY)
             vy = Game.hitVY;
