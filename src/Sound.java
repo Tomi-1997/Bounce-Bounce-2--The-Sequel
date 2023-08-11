@@ -1,7 +1,10 @@
 import javax.sound.sampled.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Sound extends TemplateObject
 {
@@ -25,7 +28,9 @@ public class Sound extends TemplateObject
             Load hit sound to play when a player hits an obstacle
          */
         hitSounds = new ArrayList<>();
-        int hitSoundCounter = 5;
+
+        File directory = new File("src\\sound");
+        int hitSoundCounter = Objects.requireNonNull(directory.listFiles()).length - 1;
         for (int i = 1; i <= hitSoundCounter; i++)
             load(hitSound + i + ".wav");
 
