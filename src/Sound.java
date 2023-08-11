@@ -2,6 +2,10 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -28,10 +32,7 @@ public class Sound extends TemplateObject
             Load hit sound to play when a player hits an obstacle
          */
         hitSounds = new ArrayList<>();
-
-        File directory = new File("src\\sound");
-        int hitSoundCounter = Objects.requireNonNull(directory.listFiles()).length - 1;
-        for (int i = 1; i <= hitSoundCounter; i++)
+        for (int i = 1; i <= Game.beepFiles; i++)
             load(hitSound + i + ".wav");
 
     }

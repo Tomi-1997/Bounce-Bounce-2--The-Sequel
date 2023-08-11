@@ -45,7 +45,7 @@ public class Game
     public static double score = 0;
     private double lastCollision = 0;
     public static final double beepProb = 0.4;
-
+    public static final int beepFiles = 5;
     public static boolean hasMusic = true;
     private boolean restartAvailable = true;
 
