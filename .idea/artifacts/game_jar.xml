@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="Bounce Bounce 2- The Sequel:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Bounce_Bounce_2__The_Sequel_jar</output-path>
+  <artifact type="jar" name="game.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/game_jar</output-path>
     <root id="archive" name="Bounce Bounce 2- The Sequel.jar">
       <element id="module-output" name="Bounce Bounce 2- The Sequel" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/fracpete/princeton-java-stdlib/1.0.2/princeton-java-stdlib-1.0.2.jar" path-in-jar="/" />

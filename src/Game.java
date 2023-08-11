@@ -18,11 +18,12 @@ public class Game
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
-        try {sound("Minibit.wav", true);} catch (Exception e) {hasMusic = false; e.printStackTrace();}
+        createSound("Minibit.wav", "beep");
     }
 
     private final Collection<TemplateObject> TO;
     private Player p;
+    private Sound s;
 
     private static final long FPS = 1000 / 60;
     public static final int obstacles = 10;
@@ -39,24 +40,14 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.007;
+    public static double speedMultiplier = 0.006;
     public static final double maxSpeed = 8;
     public static double score = 0;
     private double lastCollision = 0;
+    public static final double beepProb = 0.4;
 
     public static boolean hasMusic = true;
     private boolean restartAvailable = true;
-
-    private void sound(String filename, boolean loop) throws LineUnavailableException, IOException, UnsupportedAudioFileException
-    {
-        URL url = this.getClass().getClassLoader().getResource("sound\\" + filename);
-        assert url != null;
-        AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
-        Clip clip = AudioSystem.getClip();
-        clip.open(audioIn);
-        if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
-        clip.start();
-    }
 
     private void createInformation()
     {
@@ -84,6 +75,19 @@ public class Game
         Player p = new Player(0, maxY / 2.0, 5);
         TO.add(p);
         this.p = p;
+    }
+
+    private void createSound(String bgSound, String hitSound)
+    {
+        try
+        {
+            s = new Sound(bgSound, hitSound);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            hasMusic = false;
+        }
     }
 
     public void run()
@@ -233,10 +237,7 @@ public class Game
                 o.cl = p.cl;
                 p.cl = temp;
                 score += hitReward;
-
-                double beepProb = 0.5;
-                beepSound(beepProb);
-
+                s.collide(null);
                 generateDust(o);
                 break;
             }
@@ -245,14 +246,6 @@ public class Game
         /*
             Check if the player hit a launch pad
          */
-    }
-
-    private void beepSound(double beepProb)
-    {
-        if (Math.random() > beepProb) return;
-        String filename = "beep" + randInt(1, 5) + ".wav";
-        try {sound(filename, false);} catch (Exception e) {e.printStackTrace();}
-
     }
 
     private void resetScore()
@@ -328,7 +321,7 @@ public class Game
         synchronized (TO) {TO.addAll(obstacleHitDust); }
     }
 
-    private int randInt(int a, int b)
+    public static int randInt(int a, int b)
     {
         //
         return (int) (Math.random() * (b - a)) + a;
