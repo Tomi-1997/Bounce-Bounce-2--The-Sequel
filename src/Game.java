@@ -19,18 +19,21 @@ public class Game
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
         createSound("Minibit.wav", "beep");
+        createLaunchPads();
     }
+
 
     private final Collection<TemplateObject> TO;
     private Player p;
     private Sound s;
+    private LaunchPad l, r;
 
     private static final long FPS = 1000 / 60;
     public static final int obstacles = 10;
     public static final int maxX = 800;
     public static final int maxY = 400;
-    public static final int obstacleEPS = 50; //
-    public static final int pEPS = 10;
+    public static final int obstacleEPS = 50;
+    public static final int pEPS = 10; // Space of error when deciding if the player hit an obstacle or not
     public static final int hitReward = 10;
 
     public static double G = 0.15;
@@ -40,14 +43,15 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.006;
-    public static final double maxSpeed = 8;
+    public static double speedMultiplier = 0.005;
+    public static final double maxSpeed = 7;
     public static double score = 0;
     private double lastCollision = 0;
-    public static final double beepProb = 0.4;
+    public static final double beepProb = 0.2;
     public static final int beepFiles = 5;
     public static boolean hasMusic = true;
     private boolean restartAvailable = true;
+    private boolean isResetting = false;
 
     private void createInformation()
     {
@@ -88,6 +92,15 @@ public class Game
             e.printStackTrace();
             hasMusic = false;
         }
+    }
+
+    private void createLaunchPads()
+    {
+        l = new LaunchPad(p, maxX * 0.1, maxY * 0.5, maxY * 0.1);
+        r = new LaunchPad(p, maxX * 0.9, maxY * 0.5, maxY * 0.1);
+
+        TO.add(l);
+        TO.add(r);
     }
 
     public void run()
@@ -246,18 +259,46 @@ public class Game
         /*
             Check if the player hit a launch pad
          */
+        if (between(p.x, p.y, l.x1, l.y1, l.x2, l.y2))
+            l.collide(p);
+
+        if (between(p.x, p.y, r.x1, r.y1, r.x2, r.y2))
+            r.collide(p);
+    }
+
+    private boolean between(double x, double y, double x1, double y1, double x2, double y2)
+    {
+        double dtToX1 = (x - x1) * (x - x1) + (y - y1) * (y - y1);
+        dtToX1 = Math.sqrt(dtToX1);
+
+        double dtToX2 = (x - x2) * (x - x2) + (y - y2) * (y - y2);
+        dtToX2 = Math.sqrt(dtToX2);
+
+        double dtOverall = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+        dtOverall = Math.sqrt(dtOverall);
+
+        double dtEPS = 10;
+
+        return dtToX1 + dtToX2 - dtOverall < dtEPS;
     }
 
     private void resetScore()
     {
+        if (isResetting) return;
+
         long delayTime = 20;
-        delayTime = Math.max(( long) (20 * delayTime / (score + 1)), 1);
+        delayTime = Math.max(( long) (25 * delayTime / (score + 1)), 1);
         long finalDelayTime = delayTime;
+
+
         new Thread( () ->
         {
+            isResetting = true;
             double scoreAtFall = score;
+            double sub = scoreAtFall / 200 + 1;
             while (scoreAtFall > 0)
-            {scoreAtFall--; score--; delay(finalDelayTime);}
+            {scoreAtFall = Math.max(scoreAtFall - sub, 0); score = Math.max(score - sub, 0); delay(finalDelayTime);}
+            isResetting = false;
         } ).start();
     }
 

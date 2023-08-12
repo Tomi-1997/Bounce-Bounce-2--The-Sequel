@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class Obstacle extends TemplateObject
 {
-    double x, y, halfWidth, halfHeight, speed;
+    double x, y, halfWidthStart, halfWidth, halfHeight, speed;
     Color cl;
     int dir;
     public Obstacle(double x, double y, double halfWidth, double halfHeight, double speed)
@@ -11,6 +11,7 @@ public class Obstacle extends TemplateObject
         this.x = x;
         this.y = y;
         this.halfWidth = halfWidth;
+        this.halfWidthStart = halfWidth;
         this.halfHeight = halfHeight;
         this.speed = speed;
 
@@ -94,6 +95,12 @@ public class Obstacle extends TemplateObject
         if (currSpeed > Game.maxSpeed) currSpeed = Game.maxSpeed;
         x = x - currSpeed;
         y = y + 0.05 * dir;
+
+        /*
+            Update width based on score
+         */
+        halfWidth = halfWidthStart - Game.speedMultiplier * Game.score;
+        if (halfWidth < halfWidthStart / 2) halfWidth = halfWidthStart / 2;
     }
 
     public void recoil()

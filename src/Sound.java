@@ -1,18 +1,11 @@
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class Sound extends TemplateObject
 {
-    ArrayList<Clip> hitSounds;
+    ArrayList<String> hitSoundFName;
     public Sound(String bgSound, String hitSound)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException
     {
@@ -31,27 +24,36 @@ public class Sound extends TemplateObject
         /*
             Load hit sound to play when a player hits an obstacle
          */
-        hitSounds = new ArrayList<>();
+        hitSoundFName = new ArrayList<>();
         for (int i = 1; i <= Game.beepFiles; i++)
             load(hitSound + i + ".wav");
 
     }
 
     private void load(String s)
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException
     {
-        URL url = this.getClass().getClassLoader().getResource(s);
-        assert url != null;
-        AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
-        Clip clip = AudioSystem.getClip();
-        clip.open(audioIn);
-        hitSounds.add(clip);
+        hitSoundFName.add(s);
     }
 
     @Override
     public void collide(TemplateObject to)
     {
         if (Math.random() > Game.beepProb) return;
-        hitSounds.get(Game.randInt(0, hitSounds.size())).start();
+        int index = Game.randInt(0, hitSoundFName.size() - 1);
+        String s = hitSoundFName.get(index);
+        try
+        {
+            URL url = this.getClass().getClassLoader().getResource(s);
+            assert url != null;
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -27,7 +27,7 @@ public class Player extends TemplateObject
         /*
             Draw a deformed circle based on current velocity
          */
-        double vxNorm = Math.abs(vx / 3.5);
+        double vxNorm = Math.abs(vx / 5.5);
         double vyNorm = Math.abs(vy / (Game.maxVY / 2));
 
         if (vxNorm < 1) vxNorm = 1;
@@ -50,11 +50,13 @@ public class Player extends TemplateObject
         double strength = Game.VX;
         if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT))
         {
+            if (vx > Game.maxVX) return; // For cases when speed is more than max after hitting a launch pad
             if (vx < 0) strength = strength * 2; // Pressing right but current direction is left
             vx = Math.min(Game.maxVX, vx + strength);
         }
         if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT))
         {
+            if (vx < -Game.maxVX) return; // For cases when speed is more than max after hitting a launch pad
             if (vx > 0) strength = strength * 2; // Pressing left but current direction is right
             vx = Math.max(-Game.maxVX, vx - strength);
         }
@@ -82,4 +84,13 @@ public class Player extends TemplateObject
         if (vy > Game.maxVY)
             vy = Game.maxVY;
     }
+
+    public void launch(double vx_, double vy_)
+    {
+        vy = vy_;
+        vx = vx_;
+
+        for (int i = 0; i < 2; i++) update();
+    }
+
 }
