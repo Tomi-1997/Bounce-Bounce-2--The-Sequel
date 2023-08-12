@@ -39,7 +39,7 @@ public class LaunchPad extends TemplateObject
         if (!collideAble) return;
 
         Player toP = (Player) to;
-        boolean hitUpper = toP.y > (y2 + y1) * 0.5;
+        boolean hitUpper = toP.y > (y2 + y1) * 0.65;
         double vx, vy;
         if (hitUpper)
         {
@@ -49,8 +49,8 @@ public class LaunchPad extends TemplateObject
 
         else
         {
-            vx = Game.maxVX * 1 * direction;
-            vy = Game.maxVY;
+            vx = Game.maxVX * 1.25 * direction;
+            vy = Game.maxVY * 1.25;
         }
 
         toP.launch(vx, vy);

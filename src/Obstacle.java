@@ -121,7 +121,7 @@ public class Obstacle extends TemplateObject
         }
 
         str = -str;
-        while(y < startY * 0.95)
+        while(y < startY * 1.01)
         {
             y = y + str; // go up
             Game.delay();

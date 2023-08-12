@@ -96,8 +96,8 @@ public class Game
 
     private void createLaunchPads()
     {
-        l = new LaunchPad(p, maxX * 0.1, maxY * 0.5, maxY * 0.1);
-        r = new LaunchPad(p, maxX * 0.9, maxY * 0.5, maxY * 0.1);
+        l = new LaunchPad(p, maxX * 0.025, maxY * 0.25, maxY * 0.1);
+        r = new LaunchPad(p, maxX * 0.975, maxY * 0.25, maxY * 0.1);
 
         TO.add(l);
         TO.add(r);
