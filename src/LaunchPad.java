@@ -43,8 +43,8 @@ public class LaunchPad extends TemplateObject
         double vx, vy;
         if (hitUpper)
         {
-            vx = Game.maxVX * 2 * direction;
-            vy = Game.maxVY * 0.75;
+            vx = Game.maxVX * 2.25 * direction;
+            vy = Game.maxVY * 1;
         }
 
         else
@@ -62,14 +62,14 @@ public class LaunchPad extends TemplateObject
 
             long overallWait = 1000;
             long betweenWait = 10;
-            long unavailableDuration = 300;
+            long unavailableDuration = 200;
 
             if (hitUpper)
             {
                 oldX = x2;
                 oldY = y2;
 
-                x2 = x1;
+                x2 = (x1 + x2) * 0.5;
                 y2 = y2 + Game.maxY * 0.05;
                 Game.delay(overallWait);
 
@@ -92,7 +92,7 @@ public class LaunchPad extends TemplateObject
                 oldY = y1;
 
                 x1 = x1 + Game.maxX * 0.025 * direction;
-                y1 += (y2 - y1) / 4;
+                y1 += (y2 - y1) / 3;
                 Game.delay(overallWait);
 
                 double xInc = (x1 - oldX) / unavailableDuration;

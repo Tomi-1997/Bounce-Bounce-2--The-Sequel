@@ -32,7 +32,7 @@ public class Game
     public static final int obstacles = 10;
     public static final int maxX = 800;
     public static final int maxY = 400;
-    public static final int obstacleEPS = 50;
+    public static final int obstacleEPS = 100;
     public static final int pEPS = 10; // Space of error when deciding if the player hit an obstacle or not
     public static final int hitReward = 10;
 
@@ -43,8 +43,8 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.005;
-    public static final double maxSpeed = 7;
+    public static double speedMultiplier = 0.006;
+    public static final double maxSpeed = 6;
     public static double score = 0;
     private double lastCollision = 0;
     public static final double beepProb = 0.2;
@@ -63,8 +63,8 @@ public class Game
     {
         for (int i = 0; i < obstacles; i++)
         {
-            int w = randInt(50, 60);
-            int h = randInt(5, 10);
+            int w = randInt(maxX / 15, maxX / 10);
+            int h = randInt(maxY / 100, maxY / 50);
             double speed = baseSpeed + Math.random();
             Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
             TO.add(o);
@@ -260,10 +260,10 @@ public class Game
             Check if the player hit a launch pad
          */
         if (between(p.x, p.y, l.x1, l.y1, l.x2, l.y2))
-            l.collide(p);
+        { l.collide(p); lastCollision = System.currentTimeMillis(); }
 
         if (between(p.x, p.y, r.x1, r.y1, r.x2, r.y2))
-            r.collide(p);
+        { r.collide(p); lastCollision = System.currentTimeMillis(); }
     }
 
     private boolean between(double x, double y, double x1, double y1, double x2, double y2)

@@ -99,8 +99,8 @@ public class Obstacle extends TemplateObject
         /*
             Update width based on score
          */
-        halfWidth = halfWidthStart - Game.speedMultiplier * Game.score;
-        if (halfWidth < halfWidthStart / 2) halfWidth = halfWidthStart / 2;
+        halfWidth = halfWidthStart - Game.speedMultiplier * Game.score * 1.5;
+        if (halfWidth < halfWidthStart / 4) halfWidth = halfWidthStart / 4;
     }
 
     public void recoil()
