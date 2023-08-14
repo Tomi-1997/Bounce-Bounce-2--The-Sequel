@@ -93,4 +93,10 @@ public class Player extends TemplateObject
         for (int i = 0; i < 2; i++) update();
     }
 
+    public boolean isIn(Obstacle o, double pEPS)
+    {
+        return x + this.radius + pEPS > o.x - o.halfWidth && x - radius - pEPS < o.x + o.halfWidth &&
+                y + this.radius > o.y - o.halfHeight && y - radius < o.y + o.halfHeight;
+    }
+
 }

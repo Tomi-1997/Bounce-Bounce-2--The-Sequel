@@ -43,7 +43,7 @@ public class Game
     public static final double VX = 0.2;
     public static final double hitVY = 5;
     final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.006;
+    public static double speedMultiplier = 0.004;
     public static final double maxSpeed = 6;
     public static double score = 0;
     private double lastCollision = 0;
@@ -158,6 +158,8 @@ public class Game
             text.append(".");
         }
 
+        resetScore();
+
         /*
             Perform reset() for each object
          */
@@ -240,18 +242,20 @@ public class Game
          */
         for (Obstacle o : arr)
         {
-            if (p.x + p.radius + pEPS > o.x - o.halfWidth && p.x - p.radius - pEPS < o.x + o.halfWidth &&
-                    p.y + p.radius > o.y - o.halfHeight && p.y - p.radius < o.y + o.halfHeight)
+            if (p.isIn(o, pEPS))
             {
                 p.collide(o);
                 o.collide(p);
                 lastCollision = System.currentTimeMillis();
+
                 Color temp = o.cl;
                 o.cl = p.cl;
                 p.cl = temp;
+
                 score += hitReward;
                 s.collide(null);
                 generateDust(o);
+
                 break;
             }
         }
