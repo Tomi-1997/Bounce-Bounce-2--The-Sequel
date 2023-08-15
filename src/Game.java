@@ -29,7 +29,7 @@ public class Game
     private LaunchPad l, r;
 
     private static final long FPS = 1000 / 60;
-    public static final int obstacles = 100;
+    public static final int obstacles = 10;
     public static final int maxX = 800;
     public static final int maxY = 400;
     public static final int obstacleEPS = 100;
