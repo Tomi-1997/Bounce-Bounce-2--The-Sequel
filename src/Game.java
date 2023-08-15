@@ -29,7 +29,7 @@ public class Game
     private LaunchPad l, r;
 
     private static final long FPS = 1000 / 60;
-    public static final int obstacles = 10;
+    public static final int obstacles = 100;
     public static final int maxX = 800;
     public static final int maxY = 400;
     public static final int obstacleEPS = 100;
@@ -47,7 +47,9 @@ public class Game
     public static final double maxSpeed = 6;
     public static double score = 0;
     private double lastCollision = 0;
+    private double penR = 0.004;
     public static final double beepProb = 0.2;
+
     public static final int beepFiles = 5;
     public static boolean hasMusic = true;
     private boolean restartAvailable = true;
@@ -108,7 +110,7 @@ public class Game
         StdDraw.setCanvasSize(maxX, maxY);
         StdDraw.setXscale(0, maxX);
         StdDraw.setYscale(0, maxY);
-        StdDraw.setPenRadius(0.004);
+        StdDraw.setPenRadius(penR);
 
         while ( isRunning() )
         {
@@ -224,10 +226,22 @@ public class Game
         /*
             If the player is above the screen- draw an indicator line
          */
-        if (p.y > maxY * 1.05)
+        if (p.y > maxY * 1.1)
         {
             StdDraw.setPenColor(p.cl);
-            StdDraw.line(p.x, maxY * 1.1, p.x, maxY * 0.9);
+
+            double currentRad = p.y - maxY;
+
+            currentRad = 1 / currentRad;
+
+            currentRad = Math.min(penR * 5, currentRad);
+            currentRad = Math.max(penR, currentRad);
+            StdDraw.setPenRadius(currentRad);
+            double offset = maxX * 0.01;
+            StdDraw.line(p.x, maxY * 1.04, p.x + offset , maxY);
+            StdDraw.line(p.x, maxY * 1.04, p.x - offset, maxY);
+
+            StdDraw.setPenRadius(penR);
         }
 
         /*
@@ -291,7 +305,8 @@ public class Game
         if (isResetting) return;
 
         long delayTime = 20;
-        delayTime = Math.max(( long) (25 * delayTime / (score + 1)), 1);
+        delayTime = Math.max(( long) (50 * delayTime / (score + 1)), 1);
+        if (delayTime > 20) delayTime = 20;
         long finalDelayTime = delayTime;
 
 
