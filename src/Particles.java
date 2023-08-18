@@ -2,12 +2,12 @@ import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 
-public class Firework extends TemplateObject
+public class Particles extends TemplateObject
 {
     double x, y, vx, vy;
     Color cl;
     int lifetime;
-    public Firework(double x, double y, double radius, boolean circular)
+    public Particles(double x, double y, double radius, boolean circular)
     {
         this.x = x;
         this.y = y;
@@ -24,7 +24,7 @@ public class Firework extends TemplateObject
         lifetime = (int) (Math.random() * 150) + 50;
     }
 
-    public Firework(double x, double y, double radius, boolean circular, Color cl)
+    public Particles(double x, double y, double radius, boolean circular, Color cl)
     {
         this(x, y, radius, circular);
         this.cl = cl;

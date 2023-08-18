@@ -1,14 +1,10 @@
 import edu.princeton.cs.introcs.StdDraw;
-import javax.sound.sampled.*;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Predicate;
 
 public class Game
 {
@@ -346,7 +342,7 @@ public class Game
         ArrayList<TemplateObject> obstacleHitDust = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
-            obstacleHitDust.add(new Firework(o.x, o.y, radius, false, o.cl));
+            obstacleHitDust.add(new Particles(o.x, o.y, radius, false, o.cl));
         }
 
         addAll(obstacleHitDust);

@@ -7,7 +7,7 @@ public class Information extends TemplateObject
     double maxX, maxY;
     Player p;
 
-    ArrayList<Firework> fireworks;
+    ArrayList<Particles> particles;
     int titleSize = 60, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
@@ -34,7 +34,7 @@ public class Information extends TemplateObject
             Fireworks - when a milestone is hit
          */
 
-        if (atMilestone) for (Firework f : fireworks) f.draw();
+        if (atMilestone) for (Particles f : particles) f.draw();
 
         /*
             Sub text
@@ -56,7 +56,7 @@ public class Information extends TemplateObject
         /*
             Update fireworks
          */
-        if (atMilestone) for (Firework f : fireworks) f.update();
+        if (atMilestone) for (Particles prt : particles) prt.update();
     }
 
     private void setMilestone()
@@ -74,10 +74,10 @@ public class Information extends TemplateObject
     {
         int fireworksNum = 200;
         double radius = 10;
-        fireworks = new ArrayList<>();
+        particles = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
-            fireworks.add(new Firework(maxX / 2, maxY / 10, radius, true));
+            particles.add(new Particles(maxX / 2, maxY / 10, radius, true));
         }
     }
 
