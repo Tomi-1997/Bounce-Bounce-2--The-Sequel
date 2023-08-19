@@ -4,13 +4,15 @@ import java.awt.*;
 
 public class LaunchPad extends TemplateObject
 {
-    double x1, y1, x2, y2, maxX, maxY;
+    double x1, y1, x2, y2, maxX, maxY, maxVY, minVY;
     int direction;
     boolean collideAble = true;
-    public LaunchPad(double x, double y, double length, double maxX, double maxY)
+    public LaunchPad(double x, double y, double length, double maxX, double maxY, double maxVY, double minVY)
     {
         this.maxX = maxX;
         this.maxY = maxY;
+        this.maxVY = maxVY;
+        this.minVY = minVY;
         if (x > maxX * 0.5)
         {
             x1 = x - length;
@@ -44,13 +46,13 @@ public class LaunchPad extends TemplateObject
         if (hitUpper)
         {
             vx = Game.maxVX * 2.25 * direction;
-            vy = Game.maxVY * 1;
+            vy = maxVY * 1;
         }
 
         else
         {
             vx = Game.maxVX * 1.25 * direction;
-            vy = Game.maxVY * 1.25;
+            vy = maxVY * 1.25;
         }
 
         toP.launch(vx, vy);

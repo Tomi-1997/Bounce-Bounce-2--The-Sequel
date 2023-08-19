@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 
 public class Player extends TemplateObject
 {
-    double x, y, radius, vx, vy, maxFallSpeed;
+    double x, y, radius, vx, vy, maxFallSpeed, maxJump;
     public Color cl;
 
-    public Player(double x, double y, double radius, double minVY)
+    public Player(double x, double y, double radius, double minVY, double maxVY)
     {
         this.x = x;
         this.y = y;
@@ -16,6 +16,7 @@ public class Player extends TemplateObject
         this.vx = 2;
         this.vy = 5;
         this.maxFallSpeed = minVY;
+        this.maxJump = maxVY;
         cl = Color.WHITE;
     }
 
@@ -28,7 +29,7 @@ public class Player extends TemplateObject
             Draw a deformed circle based on current velocity
          */
         double vxNorm = Math.abs(vx / 5.5);
-        double vyNorm = Math.abs(vy / (Game.maxVY / 2));
+        double vyNorm = Math.abs( -vy / maxFallSpeed * 2.25);
 
         if (vxNorm < 1) vxNorm = 1;
         if (vyNorm < 1) vyNorm = 1;
@@ -79,10 +80,8 @@ public class Player extends TemplateObject
             Hit obstacle, flip y velocity between a defined limit
          */
         vy = -vy;
-        if (vy < Game.hitVY)
-            vy = Game.hitVY;
-        if (vy > Game.maxVY)
-            vy = Game.maxVY;
+        if (vy < Game.hitVY) vy = Game.hitVY;
+        if (vy > maxJump) vy = maxJump;
     }
 
     public void launch(double vx_, double vy_)

@@ -27,8 +27,7 @@ public class Game
     private static final double G = 0.15;
     private final int obstacles = 10, maxX = 800, maxY = 400, hitReward = 10;
 
-    private final double minVY = -10;
-    public static final double maxVY = 7;
+    private final double minVY = -10, maxVY = 7;
     public static final double maxVX = 4;
     public static final double VX = 0.2;
     public static final double hitVY = 5;
@@ -69,7 +68,7 @@ public class Game
     private void createPlayer()
     {
         int playerRadius = Math.min(maxX, maxY) / 80;
-        Player p = new Player(0, maxY / 2.0, playerRadius, minVY);
+        Player p = new Player(0, maxY / 2.0, playerRadius, minVY, maxVY);
         TO.add(p);
         this.p = p;
     }
@@ -89,8 +88,8 @@ public class Game
 
     private void createLaunchPads()
     {
-        l = new LaunchPad(maxX * 0.025, maxY * 0.25, maxY * 0.1, maxX, maxY);
-        r = new LaunchPad(maxX * 0.975, maxY * 0.25, maxY * 0.1, maxX, maxY);
+        l = new LaunchPad(maxX * 0.025, maxY * 0.25, maxY * 0.1, maxX, maxY, maxVY, minVY);
+        r = new LaunchPad(maxX * 0.975, maxY * 0.25, maxY * 0.1, maxX, maxY, maxVY, minVY);
 
         TO.add(l);
         TO.add(r);
@@ -238,8 +237,8 @@ public class Game
         /*
             If the player hits a wall, bounce him back at max X speed and give a little upwards boost
          */
-        if (p.x + p.radius < -maxX * 0.05) {p.vx = maxVX; p.vy = Math.min(p.vy + 2, Game.maxVY);}
-        if (p.x - p.radius> maxX * 1.05) {p.vx = -maxVX; p.vy = Math.min(p.vy + 2, Game.maxVY);}
+        if (p.x + p.radius < -maxX * 0.05) {p.vx = maxVX; p.vy = Math.min(p.vy + 2, maxVY);}
+        if (p.x - p.radius> maxX * 1.05) {p.vx = -maxVX; p.vy = Math.min(p.vy + 2, maxVY);}
         if (System.currentTimeMillis() - lastCollision < 500) return;
 
         /*
