@@ -41,8 +41,8 @@ public class Information extends TemplateObject
          */
         font = new Font("Monospaced", Font.BOLD, 12);
         StdDraw.setFont(font);
-        StdDraw.textLeft(-Game.maxX * 0.02, Game.maxY * 0.05, "hold right and left arrow keys to move");
-        StdDraw.textLeft(-Game.maxX * 0.02, 0, "press q to quit, press r to restart the level");
+        StdDraw.textLeft(-maxX * 0.02, maxY * 0.05, "hold right and left arrow keys to move");
+        StdDraw.textLeft(-maxX * 0.02, 0, "press q to quit, press r to restart the level");
         StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
         if (Game.hasMusic) StdDraw.textRight(maxX, maxY, "Music by Tom Pfiefel");
     }

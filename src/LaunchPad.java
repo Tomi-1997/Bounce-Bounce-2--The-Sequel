@@ -4,14 +4,14 @@ import java.awt.*;
 
 public class LaunchPad extends TemplateObject
 {
-    Player p;
-    double x1, y1, x2, y2;
+    double x1, y1, x2, y2, maxX, maxY;
     int direction;
     boolean collideAble = true;
-    public LaunchPad(Player p, double x, double y, double length)
+    public LaunchPad(double x, double y, double length, double maxX, double maxY)
     {
-        this.p = p;
-        if (x > Game.maxX * 0.5)
+        this.maxX = maxX;
+        this.maxY = maxY;
+        if (x > maxX * 0.5)
         {
             x1 = x - length;
             y1 = y - length;
@@ -30,7 +30,7 @@ public class LaunchPad extends TemplateObject
 
     public void draw()
     {
-        if (collideAble) StdDraw.setPenColor(p.cl); else StdDraw.setPenColor(Color.darkGray);
+        if (collideAble) StdDraw.setPenColor(Color.WHITE); else StdDraw.setPenColor(Color.darkGray);
         StdDraw.line(x1, y1, x2, y2);
     }
 
@@ -70,7 +70,7 @@ public class LaunchPad extends TemplateObject
                 oldY = y2;
 
                 x2 = (x1 + x2) * 0.5;
-                y2 = y2 + Game.maxY * 0.05;
+                y2 = y2 + maxY * 0.05;
                 Game.delay(overallWait);
 
                 double xInc = (x2 - oldX) / unavailableDuration;
@@ -91,7 +91,7 @@ public class LaunchPad extends TemplateObject
                 oldX = x1;
                 oldY = y1;
 
-                x1 = x1 + Game.maxX * 0.025 * direction;
+                x1 = x1 + maxX * 0.025 * direction;
                 y1 += (y2 - y1) / 3;
                 Game.delay(overallWait);
 

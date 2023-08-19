@@ -3,10 +3,10 @@ import java.awt.*;
 
 public class Obstacle extends TemplateObject
 {
-    double x, y, halfWidthStart, halfWidth, halfHeight, speed;
+    double x, y, halfWidthStart, halfWidth, halfHeight, speed, maxX;
     Color cl;
     int dir;
-    public Obstacle(double x, double y, double halfWidth, double halfHeight, double speed)
+    public Obstacle(double x, double y, double halfWidth, double halfHeight, double speed, double maxX)
     {
         this.x = x;
         this.y = y;
@@ -14,6 +14,7 @@ public class Obstacle extends TemplateObject
         this.halfWidthStart = halfWidth;
         this.halfHeight = halfHeight;
         this.speed = speed;
+        this.maxX = maxX;
 
         /*
             Generate a random colour, brighten if needed.
@@ -61,10 +62,10 @@ public class Obstacle extends TemplateObject
 
     private void sway()
     {
-        while (true)
+        while (!isReset())
         {
             dir = dir * -1;
-            Game.delay(45 * 1000);
+            Game.delay(20 * 1000);
         }
     }
 
@@ -82,9 +83,9 @@ public class Obstacle extends TemplateObject
             {x plus stuff < 0} -> It went off-screen to the left. Reset position to around the start with some random
             increments. Move height a bit.
          */
-        if (x + 2 * halfWidth + Game.obstacleEPS < 0)
+        if (x + 2 * halfWidth + maxX * 0.1 < 0)
         {
-            x = Game.maxX * (Math.random() * 0.3 + 1.2);
+            x = maxX * (Math.random() * 0.3 + 1.2);
             y = y + Math.random() * 10 - 5;
         }
 
@@ -94,7 +95,7 @@ public class Obstacle extends TemplateObject
         double currSpeed = speed + Game.speedMultiplier * Game.score;
         if (currSpeed > Game.maxSpeed) currSpeed = Game.maxSpeed;
         x = x - currSpeed;
-        y = y + 0.05 * dir;
+        y = y + 0.1 * dir;
 
         /*
             Update width based on score

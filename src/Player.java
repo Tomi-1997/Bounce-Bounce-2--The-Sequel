@@ -5,17 +5,17 @@ import java.awt.event.KeyEvent;
 
 public class Player extends TemplateObject
 {
-    double x, y, radius;
-    double vx, vy;
+    double x, y, radius, vx, vy, maxFallSpeed;
     public Color cl;
 
-    public Player(double x, double y, double radius)
+    public Player(double x, double y, double radius, double minVY)
     {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.vx = 2;
         this.vy = 5;
+        this.maxFallSpeed = minVY;
         cl = Color.WHITE;
     }
 
@@ -42,7 +42,7 @@ public class Player extends TemplateObject
         x = x + vx;
         y = y + vy;
 
-        vy = Math.max(vy - Game.G, Game.minVY);
+        vy = Math.max(vy - Game.getGravity(), maxFallSpeed);
 
         /*
             Changing direction has more effect on velocity up to a certain limit.

@@ -18,22 +18,16 @@ public class Game
         createLaunchPads();
     }
 
-
     private final Collection<TemplateObject> TO;
     private Player p;
     private Sound s;
     private LaunchPad l, r;
 
     private static final long FPS = 1000 / 60;
-    public static final int obstacles = 10;
-    public static final int maxX = 800;
-    public static final int maxY = 400;
-    public static final int obstacleEPS = 100;
-    public static final int pEPS = 10; // Space of error when deciding if the player hit an obstacle or not
-    public static final int hitReward = 10;
+    private static final double G = 0.15;
+    private final int obstacles = 10, maxX = 800, maxY = 400, hitReward = 10;
 
-    public static double G = 0.15;
-    public static final double minVY = -10;
+    private final double minVY = -10;
     public static final double maxVY = 7;
     public static final double maxVX = 4;
     public static final double VX = 0.2;
@@ -64,7 +58,7 @@ public class Game
             int w = randInt(maxX / 15, maxX / 10);
             int h = randInt(maxY / 100, maxY / 50);
             double speed = baseSpeed + Math.random();
-            Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
+            Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed, maxX);
             TO.add(o);
 
             x = x + randInt(150, 200);
@@ -74,7 +68,8 @@ public class Game
 
     private void createPlayer()
     {
-        Player p = new Player(0, maxY / 2.0, 5);
+        int playerRadius = Math.min(maxX, maxY) / 80;
+        Player p = new Player(0, maxY / 2.0, playerRadius, minVY);
         TO.add(p);
         this.p = p;
     }
@@ -94,8 +89,8 @@ public class Game
 
     private void createLaunchPads()
     {
-        l = new LaunchPad(p, maxX * 0.025, maxY * 0.25, maxY * 0.1);
-        r = new LaunchPad(p, maxX * 0.975, maxY * 0.25, maxY * 0.1);
+        l = new LaunchPad(maxX * 0.025, maxY * 0.25, maxY * 0.1, maxX, maxY);
+        r = new LaunchPad(maxX * 0.975, maxY * 0.25, maxY * 0.1, maxX, maxY);
 
         TO.add(l);
         TO.add(r);
@@ -250,6 +245,7 @@ public class Game
         /*
             Check for each obstacle if the player hit them
          */
+        double pEPS = p.radius;
         for (Obstacle o : arr)
         {
             if (p.isIn(o, pEPS))
@@ -381,6 +377,11 @@ public class Game
     {
         //
         return (int) (Math.random() * (b - a)) + a;
+    }
+
+    public static double getGravity()
+    {
+        return G;
     }
 
 }
