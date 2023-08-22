@@ -41,7 +41,7 @@ public class Game
 
     public static final int beepFiles = 5;
     public static boolean hasMusic = true;
-    private boolean restartAvailable = true;
+    private boolean restartAvailable = true, regenAvailable = true;
     private boolean isResetting = false;
 
     private void createInformation()
@@ -117,6 +117,56 @@ public class Game
         synchronized (TO) { for (Updatable u : TO) u.update(); }
         synchronized (TO) { for (Drawable  d : TO) d.draw(); }
         checkCollision();
+        checkRegeneration();
+    }
+
+    private void checkRegeneration()
+    {
+        if (!regenAvailable) return;
+        new Thread(this::checkRegeneration_).start();
+    }
+
+    private void checkRegeneration_()
+    {
+        regenAvailable = false;
+        /*
+            Mark obstacles for removal
+         */
+
+        int delaySec = randInt(10, 20);
+        delay(delaySec * 1000L);
+        for (TemplateObject to : TO)
+            if (to.getClass() == Obstacle.class) to.reset();
+
+        int dropStrength = 1;
+        createObstacles((int) (maxX * 0.4), (int) (maxY * 1.5));
+
+        /*
+            Slowly drop all obstacles
+         */
+
+        for (int i = 0; i < maxY; i++)
+        {
+            synchronized (TO)
+            {
+                for (TemplateObject u : TO)
+                {
+                    if (u.getClass() != Obstacle.class) continue;
+                    Obstacle o = (Obstacle) u;
+                    o.y = o.y - dropStrength;
+                }
+            }
+            delay(10);
+        }
+
+
+        delay(2000);
+
+        /*
+            Remove old obstacles
+         */
+        TO.removeIf(TemplateObject::isReset);
+        regenAvailable = true;
     }
 
     private void restart()
@@ -237,8 +287,8 @@ public class Game
         /*
             If the player hits a wall, bounce him back at max X speed and give a little upwards boost
          */
-        if (p.x + p.radius < -maxX * 0.05) {p.vx = maxVX; p.vy = Math.min(p.vy + 2, maxVY);}
-        if (p.x - p.radius> maxX * 1.05) {p.vx = -maxVX; p.vy = Math.min(p.vy + 2, maxVY);}
+        if (p.x + p.radius < -maxX * 0.05) {p.vx = maxVX; p.vy = Math.min(p.vy + 3, maxVY);}
+        if (p.x - p.radius > maxX * 1.05) {p.vx = -maxVX; p.vy = Math.min(p.vy + 3, maxVY);}
         if (System.currentTimeMillis() - lastCollision < 500) return;
 
         /*
