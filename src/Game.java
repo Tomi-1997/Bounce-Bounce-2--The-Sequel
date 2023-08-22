@@ -129,12 +129,42 @@ public class Game
     private void checkRegeneration_()
     {
         regenAvailable = false;
+        int delaySec = randInt(10, 30);
+        delay(delaySec * 1000L);
+
+        /*
+            Countdown to regen
+         */
+        int duration = 1000;
+        for (int i = 3; i >= 1; i--)
+        {
+            final String lambdaText = Integer.toString(i);
+            TemplateObject d = new TemplateObject()
+            {
+                @Override
+                public void update() {}
+                @Override
+                public void reset() {}
+                @Override
+                public void onPress() {}
+                @Override
+                public void draw()
+                {
+                    StdDraw.setPenColor(Color.white);
+                    setSize(56);
+                    StdDraw.text(maxX / 2.0, maxY / 2.0, lambdaText);
+                }
+            };
+
+            add(d);
+            delay(duration);
+            rm(d);
+            TO.remove(d);
+        }
+
         /*
             Mark obstacles for removal
          */
-
-        int delaySec = randInt(10, 20);
-        delay(delaySec * 1000L);
         for (TemplateObject to : TO)
             if (to.getClass() == Obstacle.class) to.reset();
 
@@ -167,6 +197,12 @@ public class Game
          */
         TO.removeIf(TemplateObject::isReset);
         regenAvailable = true;
+    }
+
+    private void setSize(int titleSize)
+    {
+        Font font = new Font("Monospaced", Font.BOLD, titleSize);
+        StdDraw.setFont(font);
     }
 
     private void restart()
