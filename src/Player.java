@@ -5,18 +5,20 @@ import java.awt.event.KeyEvent;
 
 public class Player extends TemplateObject
 {
-    double x, y, radius, vx, vy, maxFallSpeed, maxJump;
+    double x;
+    double y;
+    double radius;
+    double vx;
+    double vy;
     public Color cl;
 
-    public Player(double x, double y, double radius, double minVY, double maxVY)
+    public Player(double x, double y, double radius)
     {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.vx = 2;
         this.vy = 5;
-        this.maxFallSpeed = minVY;
-        this.maxJump = maxVY;
         cl = Color.WHITE;
     }
 
@@ -29,7 +31,7 @@ public class Player extends TemplateObject
             Draw a deformed circle based on current velocity
          */
         double vxNorm = Math.abs(vx / 5.5);
-        double vyNorm = Math.abs( -vy / maxFallSpeed * 2.25);
+        double vyNorm = Math.abs( -vy / Game.getInstance().getMinVY() * 2.25);
 
         if (vxNorm < 1) vxNorm = 1;
         if (vyNorm < 1) vyNorm = 1;
@@ -43,23 +45,23 @@ public class Player extends TemplateObject
         x = x + vx;
         y = y + vy;
 
-        vy = Math.max(vy - Game.getGravity(), maxFallSpeed);
+        vy = Math.max(vy - Game.getInstance().getGravity(), Game.getInstance().getMinVY());
 
         /*
             Changing direction has more effect on velocity up to a certain limit.
          */
-        double strength = Game.VX;
+        double strength = Game.getInstance().getVX();
         if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT))
         {
-            if (vx > Game.maxVX) return; // For cases when speed is more than max after hitting a launch pad
+            if (vx > Game.getInstance().getMaxVX()) return; // For cases when speed is more than max after hitting a launch pad
             if (vx < 0) strength = strength * 2; // Pressing right but current direction is left
-            vx = Math.min(Game.maxVX, vx + strength);
+            vx = Math.min(Game.getInstance().getMaxVX(), vx + strength);
         }
         if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT))
         {
-            if (vx < -Game.maxVX) return; // For cases when speed is more than max after hitting a launch pad
+            if (vx < -Game.getInstance().getMaxVX()) return; // For cases when speed is more than max after hitting a launch pad
             if (vx > 0) strength = strength * 2; // Pressing left but current direction is right
-            vx = Math.max(-Game.maxVX, vx - strength);
+            vx = Math.max(-Game.getInstance().getMaxVX(), vx - strength);
         }
     }
 
@@ -71,17 +73,17 @@ public class Player extends TemplateObject
 
     public void collide(TemplateObject to)
     {
-        if (to.getClass() == Obstacle.class) collide( (Obstacle) to);
+        if (to.getClass() == Obstacle.class) bounce();
     }
 
-    public void collide(Obstacle o)
+    public void bounce()
     {
         /*
             Hit obstacle, flip y velocity between a defined limit
          */
         vy = -vy;
-        if (vy < Game.hitVY) vy = Game.hitVY;
-        if (vy > maxJump) vy = maxJump;
+        vy = Math.max(vy, Game.getInstance().getHitVY());
+        vy = Math.min(vy, Game.getInstance().getMaxVY());
     }
 
     public void launch(double vx_, double vy_)
@@ -98,4 +100,24 @@ public class Player extends TemplateObject
                 y + this.radius > o.y - o.halfHeight && y - radius < o.y + o.halfHeight;
     }
 
+    public boolean checkBelow()
+    {
+        /*
+            If the player drops below screen - reset score and launch him back
+         */
+
+        int maxY = Game.getInstance().getMaxY();
+        if (y < -maxY * 0.2)
+        {
+            vy = maxY / 40.0 + 2;
+            return true;
+        }
+        return false;
+    }
+
+    public void checkAbove() {
+    }
+
+    public void checkSides() {
+    }
 }

@@ -1,5 +1,5 @@
 import edu.princeton.cs.introcs.StdDraw;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class Information extends TemplateObject
@@ -8,7 +8,7 @@ public class Information extends TemplateObject
     Player p;
 
     ArrayList<Particles> particles;
-    int titleSize = 60, currentMilestone = 0, milestoneInc = 100;
+    int titleSize = 60, textSize = 12, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
     public Information(double maxX, double maxY, Player p)
@@ -17,6 +17,7 @@ public class Information extends TemplateObject
         this.maxY = maxY;
         this.p = p;
     }
+
     @Override
     public void draw()
     {
@@ -25,55 +26,55 @@ public class Information extends TemplateObject
         /*
             Title
          */
-        Font font = new Font("Monospaced", Font.BOLD, titleSize);
-        StdDraw.setFont(font);
-        String title = (int) Game.score + "";
+        Game.getInstance().setFontSize(titleSize);
+        String title = (int) Game.getInstance().getScore() + "";
         StdDraw.text(maxX / 2, maxY / 10, title);
 
         /*
-            Fireworks - when a milestone is hit
+            Confetti - when a milestone is hit
          */
-
         if (atMilestone) for (Particles f : particles) f.draw();
 
         /*
             Sub text
          */
-        font = new Font("Monospaced", Font.BOLD, 12);
-        StdDraw.setFont(font);
+        Game.getInstance().setFontSize(textSize);
         StdDraw.textLeft(-maxX * 0.02, maxY * 0.05, "hold right and left arrow keys to move");
         StdDraw.textLeft(-maxX * 0.02, 0, "press q to quit, press r to restart the level");
         StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
-        if (Game.hasMusic) StdDraw.textRight(maxX, maxY, "Music by Tom Pfiefel");
+        if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfiefel");
     }
 
     @Override
     public void update()
     {
-        Game.score += 0.1;
-        if (!atMilestone && Game.score >= currentMilestone + milestoneInc) new Thread(this::setMilestone).start();
+        /*
+            Not in middle of celebration AND passed latest milestone
+         */
+        if (!atMilestone && Game.getInstance().getScore() >= currentMilestone + milestoneInc)
+            new Thread(this::setMilestone).start();
 
         /*
-            Update fireworks
+            Update confetti
          */
         if (atMilestone) for (Particles prt : particles) prt.update();
     }
 
     private void setMilestone()
     {
-        generateFireworks(); // launch fireworks when reaching milestone
+        generateConfetti(); // launch fireworks when reaching milestone
         atMilestone = true;
-        titleSize = 100;    // big title
+        titleSize *= 2;    // big title
         currentMilestone = currentMilestone + milestoneInc; // Set next milestone
-        Game.delay(3 * 1000); // wait a bit, then revert to normal
+        Game.getInstance().delay(3 * 1000); // wait a bit, then revert to normal
         atMilestone = false;
-        titleSize = 60;
+        titleSize /= 2;
     }
 
-    private void generateFireworks()
+    private void generateConfetti()
     {
-        int fireworksNum = 200;
-        double radius = 10;
+        int fireworksNum = (int) (Math.min(maxX, maxY) / 2);
+        double radius = Math.min(maxX, maxY) / 40;
         particles = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
@@ -84,6 +85,7 @@ public class Information extends TemplateObject
     @Override
     public void reset()
     {
+        //
         currentMilestone = 0;
     }
 }

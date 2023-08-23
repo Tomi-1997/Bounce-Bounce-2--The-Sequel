@@ -4,15 +4,15 @@ import java.awt.*;
 
 public class LaunchPad extends TemplateObject
 {
-    double x1, y1, x2, y2, maxX, maxY, maxVY, minVY;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
     int direction;
     boolean collideAble = true;
-    public LaunchPad(double x, double y, double length, double maxX, double maxY, double maxVY, double minVY)
+
+    public LaunchPad(double x, double y, double length, double maxX)
     {
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.maxVY = maxVY;
-        this.minVY = minVY;
         if (x > maxX * 0.5)
         {
             x1 = x - length;
@@ -40,19 +40,23 @@ public class LaunchPad extends TemplateObject
     {
         if (!collideAble) return;
 
+        /*
+            Just collided with player, check area of collision and spring forward
+         */
+
         Player toP = (Player) to;
         boolean hitUpper = toP.y > (y2 + y1) * 0.65;
         double vx, vy;
         if (hitUpper)
         {
-            vx = Game.maxVX * 2.25 * direction;
-            vy = maxVY * 1;
+            vx = Game.getInstance().getMaxVX() * 2.25 * direction;
+            vy = Game.getInstance().getMaxVY() * 1;
         }
 
         else
         {
-            vx = Game.maxVX * 1.25 * direction;
-            vy = maxVY * 1.25;
+            vx = Game.getInstance().getMaxVX() * 1.25 * direction;
+            vy = Game.getInstance().getMaxVY() * 1.25;
         }
 
         toP.launch(vx, vy);
@@ -72,8 +76,8 @@ public class LaunchPad extends TemplateObject
                 oldY = y2;
 
                 x2 = (x1 + x2) * 0.5;
-                y2 = y2 + maxY * 0.05;
-                Game.delay(overallWait);
+                y2 = y2 + Game.getInstance().getMaxY() * 0.05;
+                Game.getInstance().delay(overallWait);
 
                 double xInc = (x2 - oldX) / unavailableDuration;
                 double yInc = (y2 - oldY) / unavailableDuration;
@@ -81,7 +85,7 @@ public class LaunchPad extends TemplateObject
                 {
                     x2 = x2 - xInc;
                     y2 = y2 - yInc;
-                    Game.delay(betweenWait);
+                    Game.getInstance().delay(betweenWait);
                 }
 
                 x2 = oldX;
@@ -93,9 +97,9 @@ public class LaunchPad extends TemplateObject
                 oldX = x1;
                 oldY = y1;
 
-                x1 = x1 + maxX * 0.025 * direction;
+                x1 = x1 + Game.getInstance().getMaxX() * 0.025 * direction;
                 y1 += (y2 - y1) / 3;
-                Game.delay(overallWait);
+                Game.getInstance().delay(overallWait);
 
                 double xInc = (x1 - oldX) / unavailableDuration;
                 double yInc = (y1 - oldY) / unavailableDuration;
@@ -103,7 +107,7 @@ public class LaunchPad extends TemplateObject
                 {
                     x1 = x1 - xInc;
                     y1 = y1 - yInc;
-                    Game.delay(betweenWait);
+                    Game.getInstance().delay(betweenWait);
                 }
 
                 x1 = oldX;

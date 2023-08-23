@@ -4,9 +4,13 @@ import java.awt.*;
 
 public class Particles extends TemplateObject
 {
-    double x, y, vx, vy;
+    double x;
+    double y;
+    double vx;
+    double vy;
     Color cl;
     int lifetime;
+
     public Particles(double x, double y, double radius, boolean circular)
     {
         this.x = x;
@@ -45,8 +49,8 @@ public class Particles extends TemplateObject
         x = x + vx;
         y = y + vy;
 
-        vy = vy - Game.getGravity() * 0.05;
-        vx = vx - Game.getGravity() * 0.01;
+        vy = vy - Game.getInstance().getGravity() * 0.05;
+        vx = vx - Game.getInstance().getGravity() * 0.01;
         lifetime--;
     }
 }

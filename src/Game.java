@@ -6,43 +6,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class Game
+class Game
 {
-    public Game()
+    //TODO score ++ overtime in game
+    private static Game myGame;
+    private Game()
     {
         TO = Collections.synchronizedCollection(new ArrayList<>());
         createPlayer();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
-        createSound("Minibit.wav", "beep");
+        createSound();
         createLaunchPads();
     }
 
-    private final Collection<TemplateObject> TO;
-    private Player p;
-    private Sound s;
-    private LaunchPad l, r;
+    public static synchronized Game getInstance()
+    {
+        if (myGame == null)
+            myGame = new Game();
 
-    private static final long FPS = 1000 / 60;
-    private static final double G = 0.15;
-    private final int obstacles = 10, maxX = 800, maxY = 400, hitReward = 10;
-
-    private final double minVY = -10, maxVY = 7;
-    public static final double maxVX = 4;
-    public static final double VX = 0.2;
-    public static final double hitVY = 5;
-    final double baseSpeed = 1.5;
-    public static double speedMultiplier = 0.004;
-    public static final double maxSpeed = 6;
-    public static double score = 0;
-    private double lastCollision = 0;
-    private double penR = 0.004;
-    public static final double beepProb = 0.2;
-
-    public static final int beepFiles = 5;
-    public static boolean hasMusic = true;
-    private boolean restartAvailable = true, regenAvailable = true;
-    private boolean isResetting = false;
+        return myGame;
+    }
 
     private void createInformation()
     {
@@ -57,7 +41,7 @@ public class Game
             int w = randInt(maxX / 15, maxX / 10);
             int h = randInt(maxY / 100, maxY / 50);
             double speed = baseSpeed + Math.random();
-            Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed, maxX);
+            Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
             TO.add(o);
 
             x = x + randInt(150, 200);
@@ -68,16 +52,16 @@ public class Game
     private void createPlayer()
     {
         int playerRadius = Math.min(maxX, maxY) / 80;
-        Player p = new Player(0, maxY / 2.0, playerRadius, minVY, maxVY);
+        Player p = new Player(0, maxY / 2.0, playerRadius);
         TO.add(p);
         this.p = p;
     }
 
-    private void createSound(String bgSound, String hitSound)
+    private void createSound()
     {
         try
         {
-            s = new Sound(bgSound, hitSound);
+            s = new Sound("Minibit.wav", "beep");
         }
         catch (Exception e)
         {
@@ -88,8 +72,8 @@ public class Game
 
     private void createLaunchPads()
     {
-        l = new LaunchPad(maxX * 0.025, maxY * 0.25, maxY * 0.1, maxX, maxY, maxVY, minVY);
-        r = new LaunchPad(maxX * 0.975, maxY * 0.25, maxY * 0.1, maxX, maxY, maxVY, minVY);
+        l = new LaunchPad(maxX * 0.025, maxY * 0.25, maxY * 0.1, maxX);
+        r = new LaunchPad(maxX * 0.975, maxY * 0.25, maxY * 0.1, maxX);
 
         TO.add(l);
         TO.add(r);
@@ -151,7 +135,7 @@ public class Game
                 public void draw()
                 {
                     StdDraw.setPenColor(Color.white);
-                    setSize(56);
+                    setFontSize(56);
                     StdDraw.text(maxX / 2.0, maxY / 2.0, lambdaText);
                 }
             };
@@ -199,7 +183,7 @@ public class Game
         regenAvailable = true;
     }
 
-    private void setSize(int titleSize)
+    public void setFontSize(int titleSize)
     {
         Font font = new Font("Monospaced", Font.BOLD, titleSize);
         StdDraw.setFont(font);
@@ -289,15 +273,12 @@ public class Game
                 if (to.getClass() == Obstacle.class) arr.add((Obstacle) to);
             }
         }
-
-        /*
-            If the player drops below screen - reset score and launch him back
-         */
-        if (p.y < -maxY * 0.2)
-        {
-            p.vy = maxY / 40.0 + 2;
-            resetScore();
-        }
+//
+        if (p.checkBelow()) resetScore();
+//        p.checkAbove();
+//        p.checkSides();
+//
+//        synchronized (TO) { for (TemplateObject to : TO) collide(p, to); }
 
         /*
             If the player is above the screen- draw an indicator line
@@ -398,13 +379,13 @@ public class Game
         } ).start();
     }
 
-    public static void delay()
+    public void delay()
     {
         //
         try {Thread.sleep(FPS);} catch (InterruptedException e) {e.printStackTrace();}
     }
 
-    public static void delay(long millis)
+    public void delay(long millis)
     {
         //
         try {Thread.sleep(millis);} catch (InterruptedException e) {e.printStackTrace();}
@@ -458,15 +439,125 @@ public class Game
         synchronized (TO) {TO.addAll(obstacleHitDust); }
     }
 
-    public static int randInt(int a, int b)
+    public int randInt(int a, int b)
     {
         //
         return (int) (Math.random() * (b - a)) + a;
     }
 
-    public static double getGravity()
+    public double getGravity()
     {
         return G;
     }
+
+    public int getMaxX() {
+        return maxX;
+    }
+
+    public int getHitReward() {
+        return hitReward;
+    }
+
+    public double getMinVY() {
+        return minVY;
+    }
+
+    public double getMaxVY() {
+        return maxVY;
+    }
+
+    public double getMaxVX() {
+        return maxVX;
+    }
+
+    public double getVX() {
+        return VX;
+    }
+
+    public double getHitVY() {
+        return hitVY;
+    }
+
+    public double getBaseSpeed() {
+        return baseSpeed;
+    }
+
+    public double getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public double getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public double getLastCollision() {
+        return lastCollision;
+    }
+
+    public double getPenR() {
+        return penR;
+    }
+
+    public double getBeepProb() {
+        return beepProb;
+    }
+
+    public int getBeepFiles() {
+        return beepFiles;
+    }
+
+    public boolean hasMusic() {
+        return hasMusic;
+    }
+
+    public boolean isRestartAvailable() {
+        return restartAvailable;
+    }
+
+    public boolean isRegenAvailable() {
+        return regenAvailable;
+    }
+
+    public boolean isResetting() {
+        return isResetting;
+    }
+
+    private final Collection<TemplateObject> TO;
+    private Player p;
+    private Sound s;
+    private LaunchPad l, r;
+
+    private final long FPS = 1000 / 60;
+    private final double G = 0.15;
+    private final int obstacles = 10, maxX = 800, maxY = 400, hitReward = 10;
+
+    private final double minVY = -10, maxVY = 7;
+    private final double maxVX = 4;
+    private final double VX = 0.2;
+    private final double hitVY = 5;
+    final double baseSpeed = 1.5;
+    private double speedMultiplier = 0.004;
+    private final double maxSpeed = 6;
+    private double score = 0;
+    private double lastCollision = 0;
+    private double penR = 0.004;
+    private final double beepProb = 0.2;
+
+    private final int beepFiles = 5;
+    private boolean hasMusic = true;
+    private boolean restartAvailable = true, regenAvailable = true;
+    private boolean isResetting = false;
+
+    public int getMaxY()
+    {
+        return maxY;
+    }
+
+    public void collide(Player p, TemplateObject to)
+    {}
 
 }
