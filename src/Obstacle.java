@@ -89,7 +89,7 @@ public class Obstacle extends TemplateObject
         }
 
         /*
-            Go left, float up/down
+            Go left (Speed is based on the current score), float up/down.
          */
         double currSpeed = speed + Game.getInstance().getSpeedMultiplier() * Game.getInstance().getScore();
         if (currSpeed > Game.getInstance().getMaxSpeed()) currSpeed = Game.getInstance().getMaxSpeed();

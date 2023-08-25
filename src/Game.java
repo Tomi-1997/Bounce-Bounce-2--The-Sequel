@@ -534,7 +534,7 @@ class Game
     private final double VX = 0.2;
     private final double hitVY = 5;
     final double baseSpeed = 1.5;
-    private double speedMultiplier = 0.004;
+    private double speedMultiplier = 0.0035;
     private final double maxSpeed = 6;
     private double lastCollision = 0;
     private double penR = 0.004;

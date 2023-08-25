@@ -32,8 +32,17 @@ public class LaunchPad extends TemplateObject
 
     public void draw()
     {
+        /*
+            Upper section - where hitting will catapult you
+         */
         if (collideAble) StdDraw.setPenColor(Color.WHITE); else StdDraw.setPenColor(Color.darkGray);
-        StdDraw.line(x1, y1, x2, y2);
+        StdDraw.line(x1, y1, x1 - (x1 - x2) * 0.65, y1 - (y1 - y2) * 0.65);
+
+        /*
+            Lower section - hitting this will thrust the player upwards.
+         */
+        if (collideAble) StdDraw.setPenColor(Color.RED); else StdDraw.setPenColor(Color.darkGray);
+        StdDraw.line(x2, y2, x2 - (x2 - x1) * 0.35, y2 - (y2 - y1) * 0.35);
     }
 
     public void collide(TemplateObject to)
