@@ -339,6 +339,7 @@ class Game
                 sound.collide(null);
                 generateDust(o);
 
+                hitObstacle = true;
                 break;
             }
         }
@@ -380,11 +381,12 @@ class Game
             double oldGain = scorePassiveGain;
             isResetting = true;
             scorePassiveGain = 0;
+            hitObstacle = false;
 
             /*
                 Slowly begin to subtract from score, accelerate abruptly after a few iterations
              */
-            for (int i = 1; score >= 0 ;i++)
+            for (int i = 1; score >= 0 && !hitObstacle ; i++)
             {
                 long delayTime = (long)(Math.max(1, 100 - i * Math.sqrt(i)));
                 delay(delayTime);
@@ -392,9 +394,9 @@ class Game
             }
 
             /*
-                Set score = 0, it might be negative, set passive gain positive again
+                If didn't hit obstacle - Set score = 0, it might be negative, set passive gain positive again
              */
-            score = 0;
+            if (!hitObstacle) score = 0;
             scorePassiveGain = oldGain;
             isResetting = false;
         }).start();
@@ -416,7 +418,6 @@ class Game
     {
         new Thread(() -> generateDust_(o)).start();
     }
-
 
     private void generateDust_(Obstacle o)
     {
@@ -475,10 +476,6 @@ class Game
         return maxX;
     }
 
-    public int getScoreHitReward() {
-        return scoreHitReward;
-    }
-
     public double getMinVY() {
         return minVY;
     }
@@ -499,10 +496,6 @@ class Game
         return hitVY;
     }
 
-    public double getBaseSpeed() {
-        return baseSpeed;
-    }
-
     public double getSpeedMultiplier() {
         return speedMultiplier;
     }
@@ -515,14 +508,6 @@ class Game
         return score;
     }
 
-    public double getLastCollision() {
-        return lastCollision;
-    }
-
-    public double getPenR() {
-        return penR;
-    }
-
     public double getBeepProb() {
         return beepProb;
     }
@@ -533,18 +518,6 @@ class Game
 
     public boolean hasMusic() {
         return hasMusic;
-    }
-
-    public boolean isRestartAvailable() {
-        return restartAvailable;
-    }
-
-    public boolean isRegenAvailable() {
-        return regenAvailable;
-    }
-
-    public boolean isResetting() {
-        return isResetting;
     }
 
     private final Collection<TemplateObject> TO;
@@ -567,7 +540,7 @@ class Game
     private double penR = 0.004;
     private final double beepProb = 0.2;
 
-    private double score = 1000;
+    private double score = 0;
     private double scorePassiveGain = 0.1;
     private final int scoreHitReward = 10;
 
@@ -575,6 +548,8 @@ class Game
     private boolean hasMusic = true;
     private boolean restartAvailable = true, regenAvailable = true;
     private boolean isResetting = false;
+    private boolean hitObstacle = false;
+
 
     public int getMaxY()
     {
