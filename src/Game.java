@@ -8,7 +8,11 @@ import java.util.Collections;
 
 class Game
 {
-    //TODO score ++ overtime in game
+    //TODO 
+    // score ++ overtime in game
+    // finish player funcs
+    // move collision to entities
+
     private static Game myGame;
     private Game()
     {
@@ -61,10 +65,11 @@ class Game
     {
         try
         {
-            s = new Sound("Minibit.wav", "beep");
+            sound = new Sound("Minibit.wav", "beep");
         }
         catch (Exception e)
         {
+            sound = new TemplateObject();
             e.printStackTrace();
             hasMusic = false;
         }
@@ -102,6 +107,7 @@ class Game
         synchronized (TO) { for (Drawable  d : TO) d.draw(); }
         checkCollision();
         checkRegeneration();
+        score = score + scorePassiveGain;
     }
 
     private void checkRegeneration()
@@ -120,9 +126,10 @@ class Game
             Countdown to regen
          */
         int duration = 1000;
-        for (int i = 3; i >= 1; i--)
+        for (int i = 5; i >= 1; i--)
         {
             final String lambdaText = Integer.toString(i);
+            int finalI = i;
             TemplateObject d = new TemplateObject()
             {
                 @Override
@@ -135,15 +142,12 @@ class Game
                 public void draw()
                 {
                     StdDraw.setPenColor(Color.white);
-                    setFontSize(56);
+                    setFontSize(100 - finalI * 10);
                     StdDraw.text(maxX / 2.0, maxY / 2.0, lambdaText);
                 }
             };
 
-            add(d);
-            delay(duration);
-            rm(d);
-            TO.remove(d);
+            addFor(d, duration);
         }
 
         /*
@@ -181,6 +185,13 @@ class Game
          */
         TO.removeIf(TemplateObject::isReset);
         regenAvailable = true;
+    }
+
+    private void addFor(TemplateObject d, int duration)
+    {
+        add(d);
+        delay(duration);
+        rm(d);
     }
 
     public void setFontSize(int titleSize)
@@ -324,8 +335,8 @@ class Game
                 o.cl = p.cl;
                 p.cl = temp;
 
-                score += hitReward;
-                s.collide(null);
+                score += scoreHitReward;
+                sound.collide(null);
                 generateDust(o);
 
                 break;
@@ -361,22 +372,32 @@ class Game
     private void resetScore()
     {
         if (isResetting) return;
-
-        long delayTime = 20;
-        delayTime = Math.max(( long) (50 * delayTime / (score + 1)), 1);
-        if (delayTime > 20) delayTime = 20;
-        long finalDelayTime = delayTime;
-
-
         new Thread( () ->
         {
+            /*
+                Mark at reset, stop passive score gain
+             */
+            double oldGain = scorePassiveGain;
             isResetting = true;
-            double scoreAtFall = score;
-            double sub = scoreAtFall / 200 + 1;
-            while (scoreAtFall > 0)
-            {scoreAtFall = Math.max(scoreAtFall - sub, 0); score = Math.max(score - sub, 0); delay(finalDelayTime);}
+            scorePassiveGain = 0;
+
+            /*
+                Slowly begin to subtract from score, accelerate abruptly after a few iterations
+             */
+            for (int i = 1; score >= 0 ;i++)
+            {
+                long delayTime = (long)(Math.max(1, 100 - i * Math.sqrt(i)));
+                delay(delayTime);
+                score--;
+            }
+
+            /*
+                Set score = 0, it might be negative, set passive gain positive again
+             */
+            score = 0;
+            scorePassiveGain = oldGain;
             isResetting = false;
-        } ).start();
+        }).start();
     }
 
     public void delay()
@@ -454,8 +475,8 @@ class Game
         return maxX;
     }
 
-    public int getHitReward() {
-        return hitReward;
+    public int getScoreHitReward() {
+        return scoreHitReward;
     }
 
     public double getMinVY() {
@@ -528,12 +549,12 @@ class Game
 
     private final Collection<TemplateObject> TO;
     private Player p;
-    private Sound s;
+    private TemplateObject sound;
     private LaunchPad l, r;
 
     private final long FPS = 1000 / 60;
     private final double G = 0.15;
-    private final int obstacles = 10, maxX = 800, maxY = 400, hitReward = 10;
+    private final int obstacles = 10, maxX = 800, maxY = 400;
 
     private final double minVY = -10, maxVY = 7;
     private final double maxVX = 4;
@@ -542,10 +563,13 @@ class Game
     final double baseSpeed = 1.5;
     private double speedMultiplier = 0.004;
     private final double maxSpeed = 6;
-    private double score = 0;
     private double lastCollision = 0;
     private double penR = 0.004;
     private final double beepProb = 0.2;
+
+    private double score = 1000;
+    private double scorePassiveGain = 0.1;
+    private final int scoreHitReward = 10;
 
     private final int beepFiles = 5;
     private boolean hasMusic = true;
