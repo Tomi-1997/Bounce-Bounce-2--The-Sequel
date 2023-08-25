@@ -9,9 +9,8 @@ import java.util.Collections;
 class Game
 {
     //TODO 
-    // score ++ overtime in game
-    // finish player funcs
-    // move collision to entities
+    // finish player map collisions functions
+    // move collision functions to entities
 
     private static Game myGame;
     private Game()

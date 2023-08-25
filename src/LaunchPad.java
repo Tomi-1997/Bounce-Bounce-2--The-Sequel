@@ -11,6 +11,8 @@ public class LaunchPad extends TemplateObject
     int direction;
     boolean collideAble = true;
 
+    final double catapultPart = 0.65; // Hitting above this number * (y2 + y1) will act as a catapult
+
     public LaunchPad(double x, double y, double length, double maxX)
     {
         if (x > maxX * 0.5)
@@ -36,13 +38,13 @@ public class LaunchPad extends TemplateObject
             Upper section - where hitting will catapult you
          */
         if (collideAble) StdDraw.setPenColor(Color.WHITE); else StdDraw.setPenColor(Color.darkGray);
-        StdDraw.line(x1, y1, x1 - (x1 - x2) * 0.65, y1 - (y1 - y2) * 0.65);
+        StdDraw.line(x1, y1, x1 - (x1 - x2) * catapultPart, y1 - (y1 - y2) * catapultPart);
 
         /*
             Lower section - hitting this will thrust the player upwards.
          */
         if (collideAble) StdDraw.setPenColor(Color.RED); else StdDraw.setPenColor(Color.darkGray);
-        StdDraw.line(x2, y2, x2 - (x2 - x1) * 0.35, y2 - (y2 - y1) * 0.35);
+        StdDraw.line(x2, y2, x2 - (x2 - x1) * (1 - catapultPart), y2 - (y2 - y1) * (1 - catapultPart));
     }
 
     public void collide(TemplateObject to)
@@ -54,7 +56,7 @@ public class LaunchPad extends TemplateObject
          */
 
         Player toP = (Player) to;
-        boolean hitUpper = toP.y > (y2 + y1) * 0.65;
+        boolean hitUpper = toP.y > (y2 + y1) * catapultPart;
         double vx, vy;
         if (hitUpper)
         {
