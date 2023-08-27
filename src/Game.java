@@ -526,15 +526,15 @@ class Game
 
     private final long FPS = 1000 / 60;
     private final double G = 0.15;
-    private final int obstacles = 10, maxX = 800, maxY = 400;
+    private final int obstacles = 1, maxX = 800, maxY = 400;
 
     private final double minVY = -10, maxVY = 7;
     private final double maxVX = 4;
     private final double VX = 0.2;
     private final double hitVY = 5;
     final double baseSpeed = 1.5;
-    private double speedMultiplier = 0.0035;
-    private final double maxSpeed = 6;
+    private double speedMultiplier = 0.005;
+    private final double maxSpeed = 5;
     private double lastCollision = 0;
     private double penR = 0.004;
     private final double beepProb = 0.2;

@@ -60,14 +60,14 @@ public class LaunchPad extends TemplateObject
         double vx, vy;
         if (hitUpper)
         {
-            vx = Game.getInstance().getMaxVX() * 2.25 * direction;
+            vx = Game.getInstance().getMaxVX() * 2.1 * direction;
             vy = Game.getInstance().getMaxVY() * 1;
         }
 
         else
         {
-            vx = Game.getInstance().getMaxVX() * 1.25 * direction;
-            vy = Game.getInstance().getMaxVY() * 1.25;
+            vx = Game.getInstance().getMaxVX() * 1.35 * direction;
+            vy = Game.getInstance().getMaxVY() * 1.45;
         }
 
         toP.launch(vx, vy);

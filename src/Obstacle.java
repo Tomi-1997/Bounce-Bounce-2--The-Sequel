@@ -100,7 +100,7 @@ public class Obstacle extends TemplateObject
             Update width based on score
          */
         halfWidth = halfWidthStart - Game.getInstance().getSpeedMultiplier() * Game.getInstance().getScore() * 1.5;
-        if (halfWidth < halfWidthStart / 4) halfWidth = halfWidthStart / 4;
+        halfWidth = Math.max(halfWidthStart / 5, halfWidth);
     }
 
     public void recoil()

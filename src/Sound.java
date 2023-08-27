@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Sound extends TemplateObject
 {
+    String soundDirectory = "sound\\";
     String hitSoundFName;
     public Sound(String bgSound, String hitSound)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException
@@ -13,7 +14,7 @@ public class Sound extends TemplateObject
         /*
             Starting background music
          */
-        URL url = this.getClass().getClassLoader().getResource(bgSound);
+        URL url = this.getClass().getClassLoader().getResource(soundDirectory + bgSound);
         assert url != null;
         AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
         Clip clip = AudioSystem.getClip();
@@ -29,7 +30,7 @@ public class Sound extends TemplateObject
         int index = Game.getInstance().randInt(1, Game.getInstance().getBeepFiles());
         try
         {
-            URL url = this.getClass().getClassLoader().getResource(hitSoundFName + index + ".wav");
+            URL url = this.getClass().getClassLoader().getResource(soundDirectory + hitSoundFName + index + ".wav");
             assert url != null;
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
             Clip clip = AudioSystem.getClip();
