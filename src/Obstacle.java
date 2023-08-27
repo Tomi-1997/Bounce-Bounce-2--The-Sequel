@@ -16,38 +16,19 @@ public class Obstacle extends TemplateObject
         this.speed = speed;
 
         /*
-            Generate a random colour, brighten if needed.
+            Generate a random colour
          */
         int r = (int) (Math.random() * 255);
         int g = (int) (Math.random() * 255);
         int b = (int) (Math.random() * 255);
 
-        int temp;
-
         /*
-            Blue component of a colour is much higher than red - swap values
+            If needed, brighten
          */
-        if (b > r + 100)
-        {
-            temp = b;
-            b = r;
-            r = temp;
-        }
-
-        /*
-            Blue component of a colour is much higher than green - swap values
-         */
-        if (b > g + 100)
-        {
-            temp = b;
-            b = g;
-            g = temp;
-        }
-
         while (r + g + b < 200)
         {
-            r = r + 50;
-            g = g + 50;
+            r = r + 15;
+            g = g + 15;
             b = b + 15;
         }
         cl = new Color(r, g, b);
@@ -136,6 +117,7 @@ public class Obstacle extends TemplateObject
     @Override
     public void collide(TemplateObject to)
     {
+        System.out.println(cl);
         //
         new Thread(this::recoil).start();
     }

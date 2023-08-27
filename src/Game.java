@@ -118,7 +118,7 @@ class Game
     private void checkRegeneration_()
     {
         regenAvailable = false;
-        int delaySec = randInt(10, 30);
+        int delaySec = randInt(1, 3);
         delay(delaySec * 1000L);
 
         /*
@@ -526,7 +526,7 @@ class Game
 
     private final long FPS = 1000 / 60;
     private final double G = 0.15;
-    private final int obstacles = 1, maxX = 800, maxY = 400;
+    private final int obstacles = 10, maxX = 800, maxY = 400;
 
     private final double minVY = -10, maxVY = 7;
     private final double maxVX = 4;
