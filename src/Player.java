@@ -115,9 +115,63 @@ public class Player extends TemplateObject
         return false;
     }
 
-    public void checkAbove() {
+    public void checkAbove()
+    {
+        int maxY = Game.getInstance().getMaxY();
+
+        /*
+            If the player is above the screen
+         */
+        if (y > maxY * 1.1)
+        {
+            StdDraw.setPenColor(cl);
+            double currentRad = y - maxY;
+            double offset = Game.getInstance().getMaxX() * 0.01;
+
+            /*
+                Kinda close, draw a triangle
+             */
+            if (y < maxY * 1.3)
+            {
+                double[] xs = new double[]{x, x - offset, x + offset};
+                double[] ys = new double[]{maxY * 1.04, maxY, maxY};
+
+                StdDraw.filledPolygon(xs, ys);
+            }
+
+            /*
+                Far above the screen, draw an arrow
+             */
+            else
+            {
+                double penR = Game.getInstance().getPenR();
+
+                /*
+                    Make the pen radius slimmer as the player is farthest from the border
+                 */
+                currentRad = 1 / currentRad;
+                currentRad = Math.min(penR * 5, currentRad);
+                currentRad = Math.max(penR, currentRad);
+                StdDraw.setPenRadius(currentRad);
+
+                StdDraw.line(x, maxY * 1.04, x + offset , maxY);
+                StdDraw.line(x, maxY * 1.04, x - offset, maxY);
+
+                StdDraw.setPenRadius(penR);
+            }
+
+        }
     }
 
-    public void checkSides() {
+    public void checkSides()
+    {
+        int maxX = Game.getInstance().getMaxX();
+        double maxVX = Game.getInstance().getMaxVX();
+        double maxVY = Game.getInstance().getMaxVY();
+        /*
+            If the player hits a wall, bounce him back at max X speed and give a little upwards boost
+         */
+        if (x + radius < -maxX * 0.05) {vx = maxVX; vy = Math.min(vy + 3, maxVY);}
+        if (x - radius > maxX * 1.05) {vx = -maxVX; vy = Math.min(vy + 3, maxVY);}
     }
 }

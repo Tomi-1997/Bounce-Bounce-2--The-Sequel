@@ -49,7 +49,7 @@ public class Particles extends TemplateObject
         x = x + vx;
         y = y + vy;
 
-        vy = vy - Game.getInstance().getGravity() * 0.05;
+        vy = vy - Game.getInstance().getGravity() * 0.1;
         vx = vx - Game.getInstance().getGravity() * 0.01;
         lifetime--;
     }

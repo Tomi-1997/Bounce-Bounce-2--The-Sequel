@@ -66,7 +66,7 @@ public class Information extends TemplateObject
         atMilestone = true;
         titleSize *= 2;    // big title
         currentMilestone = currentMilestone + milestoneInc; // Set next milestone
-        Game.getInstance().delay(3 * 1000); // wait a bit, then revert to normal
+        Game.getInstance().delay(4 * 1000); // wait a bit, then revert to normal
         atMilestone = false;
         titleSize /= 2;
     }
@@ -74,11 +74,11 @@ public class Information extends TemplateObject
     private void generateConfetti()
     {
         int fireworksNum = (int) (Math.min(maxX, maxY) / 2);
-        double radius = Math.min(maxX, maxY) / 40;
+        double radius = Math.min(maxX, maxY) / 20;
         particles = new ArrayList<>();
         for (int i = 0; i < fireworksNum; i++)
         {
-            particles.add(new Particles(maxX / 2, maxY / 10, radius, true));
+            particles.add(new Particles(maxX / 2, maxY / 10, radius, true, Game.getRandColor()));
         }
     }
 

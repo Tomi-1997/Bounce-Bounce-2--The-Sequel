@@ -118,7 +118,7 @@ class Game
     private void checkRegeneration_()
     {
         regenAvailable = false;
-        int delaySec = randInt(1, 3);
+        int delaySec = randInt(10, 30);
         delay(delaySec * 1000L);
 
         /*
@@ -270,6 +270,10 @@ class Game
         return !StdDraw.isKeyPressed(KeyEvent.VK_Q);
     }
 
+    public double getPenR() {
+        return penR;
+    }
+
     private void checkCollision()
     {
         /*
@@ -283,39 +287,13 @@ class Game
                 if (to.getClass() == Obstacle.class) arr.add((Obstacle) to);
             }
         }
-//
+
         if (p.checkBelow()) resetScore();
-//        p.checkAbove();
-//        p.checkSides();
+        p.checkAbove();
+        p.checkSides();
 //
 //        synchronized (TO) { for (TemplateObject to : TO) collide(p, to); }
 
-        /*
-            If the player is above the screen- draw an indicator line
-         */
-        if (p.y > maxY * 1.1)
-        {
-            StdDraw.setPenColor(p.cl);
-
-            double currentRad = p.y - maxY;
-
-            currentRad = 1 / currentRad;
-
-            currentRad = Math.min(penR * 5, currentRad);
-            currentRad = Math.max(penR, currentRad);
-            StdDraw.setPenRadius(currentRad);
-            double offset = maxX * 0.01;
-            StdDraw.line(p.x, maxY * 1.04, p.x + offset , maxY);
-            StdDraw.line(p.x, maxY * 1.04, p.x - offset, maxY);
-
-            StdDraw.setPenRadius(penR);
-        }
-
-        /*
-            If the player hits a wall, bounce him back at max X speed and give a little upwards boost
-         */
-        if (p.x + p.radius < -maxX * 0.05) {p.vx = maxVX; p.vy = Math.min(p.vy + 3, maxVY);}
-        if (p.x - p.radius > maxX * 1.05) {p.vx = -maxVX; p.vy = Math.min(p.vy + 3, maxVY);}
         if (System.currentTimeMillis() - lastCollision < 500) return;
 
         /*
@@ -536,7 +514,7 @@ class Game
     private double speedMultiplier = 0.005;
     private final double maxSpeed = 5;
     private double lastCollision = 0;
-    private double penR = 0.004;
+    private double penR = 0.005;
     private final double beepProb = 0.2;
 
     private double score = 0;
@@ -558,4 +536,24 @@ class Game
     public void collide(Player p, TemplateObject to)
     {}
 
+    public static Color getRandColor()
+    {
+        /*
+            Generate a random colour
+         */
+        int r = (int) (Math.random() * 255);
+        int g = (int) (Math.random() * 255);
+        int b = (int) (Math.random() * 255);
+
+        /*
+            If needed, brighten
+         */
+        while (r + g + b < 200)
+        {
+            r = r + 15;
+            g = g + 15;
+            b = b + 15;
+        }
+        return new Color(r, g, b);
+    }
 }
