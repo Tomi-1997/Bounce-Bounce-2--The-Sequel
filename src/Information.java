@@ -42,7 +42,7 @@ public class Information extends TemplateObject
         StdDraw.textLeft(-maxX * 0.02, maxY * 0.05, "hold right and left arrow keys to move");
         StdDraw.textLeft(-maxX * 0.02, 0, "press q to quit, press r to restart the level");
         StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
-        if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfiefel");
+        if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfeifel");
     }
 
     @Override
