@@ -31,11 +31,6 @@ public class Information extends TemplateObject
         StdDraw.text(maxX / 2, maxY / 10, title);
 
         /*
-            Confetti - when a milestone is hit
-         */
-        if (atMilestone) for (Particles f : particles) f.draw();
-
-        /*
             Sub text
          */
         Game.getInstance().setFontSize(textSize);
@@ -43,6 +38,12 @@ public class Information extends TemplateObject
         StdDraw.textLeft(-maxX * 0.02, 0, "press q to quit, press r to restart the level");
         StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
         if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfeifel");
+
+
+        /*
+            Confetti - when a milestone is hit
+         */
+        if (atMilestone) for (Particles f : particles) f.draw();
     }
 
     @Override
