@@ -90,23 +90,38 @@ class Game
         StdDraw.setYscale(0, maxY);
         StdDraw.setPenRadius(penR);
 
-        while ( isRunning() )
-        {
-            StdDraw.clear(StdDraw.BLACK);
-            iterate();
-            StdDraw.show(0);
-            delay();
-        }
+        Thread painter = new Thread(this::runDraw);
+        Thread updater = new Thread(this::runLogic);
+
+        painter.start();
+        updater.start();
+
+        try { painter.join(); updater.join(); } catch (InterruptedException e) {e.printStackTrace();}
         System.exit(0);
     }
 
-    private void iterate()
+    private void runLogic()
     {
-        synchronized (TO) { for (Updatable u : TO) u.update(); }
-        synchronized (TO) { for (Drawable  d : TO) d.draw(); }
-        checkCollision();
-        checkRegeneration();
-        score = score + scorePassiveGain;
+        while ( isRunning() )
+        {
+            synchronized (TO) { for (Updatable u : TO) u.update(); }
+            checkCollision();
+            checkRegeneration();
+            score = score + scorePassiveGain;
+            if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); }
+            delay();
+        }
+    }
+
+    private void runDraw()
+    {
+        while ( isRunning() )
+        {
+            StdDraw.clear(StdDraw.BLACK);
+            synchronized (TO) { for (Drawable d : TO) d.draw(); }
+            StdDraw.show(0);
+            delay(drawFPS);
+        }
     }
 
     private void checkRegeneration()
@@ -266,7 +281,6 @@ class Game
     private boolean isRunning()
     {
         //
-        if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); }
         return !StdDraw.isKeyPressed(KeyEvent.VK_Q);
     }
 
@@ -382,7 +396,7 @@ class Game
     public void delay()
     {
         //
-        try {Thread.sleep(FPS);} catch (InterruptedException e) {e.printStackTrace();}
+        try {Thread.sleep(logicFPS);} catch (InterruptedException e) {e.printStackTrace();}
     }
 
     public void delay(long millis)
@@ -502,7 +516,8 @@ class Game
     private TemplateObject sound;
     private LaunchPad l, r;
 
-    private final long FPS = 1000 / 60;
+    private final long logicFPS = 1000 / 60;
+    private final long drawFPS = 1000 / 60;
     private final double G = 0.15;
     private final int obstacles = 10, maxX = 800, maxY = 400;
 
