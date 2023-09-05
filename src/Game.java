@@ -8,14 +8,11 @@ import java.util.Collections;
 
 class Game
 {
-    //TODO
-    // finish player map collisions functions
-    // move collision functions to entities
-
     private static Game myGame;
     private Game()
     {
         TO = Collections.synchronizedCollection(new ArrayList<>());
+        CO = Collections.synchronizedCollection(new ArrayList<>());
         createPlayer();
         createButtons();
         createObstacles((int) (maxX * 0.25), maxY / 2);
@@ -43,6 +40,7 @@ class Game
         p.left = left;
         p.right = right;
     }
+
     private void createInformation()
     {
         Information i = new Information(maxX, maxY, this.p);
@@ -58,6 +56,7 @@ class Game
             double speed = baseSpeed + Math.random();
             Obstacle o = new Obstacle(x, y, w / 2.0, h / 2.0, speed);
             TO.add(o);
+            CO.add(o);
 
             x = x + randInt(150, 200);
             y = y + randInt(-30, 30);
@@ -80,7 +79,7 @@ class Game
         }
         catch (Exception e)
         {
-            sound = new TemplateObject();
+            sound = null;
             e.printStackTrace();
             hasMusic = false;
         }
@@ -93,6 +92,9 @@ class Game
 
         TO.add(l);
         TO.add(r);
+
+        CO.add(l);
+        CO.add(r);
     }
 
     public void run()
@@ -104,12 +106,20 @@ class Game
 
         while ( isRunning() )
         {
+//            log();
             StdDraw.clear(StdDraw.BLACK);
             iterate();
             StdDraw.show(0);
             delay();
         }
         System.exit(0);
+    }
+
+    private void log()
+    {
+        System.out.println("________________________");
+        System.out.println("Template Objects - " + TO.size());
+        System.out.println("Collidable Objects - " + CO.size());
     }
 
     private void iterate()
@@ -164,8 +174,8 @@ class Game
         /*
             Mark obstacles for removal
          */
-        for (TemplateObject to : TO)
-            if (to.getClass() == Obstacle.class) to.reset();
+        for (Collidable co : CO)
+            if (co.getClass() == Obstacle.class) ((TemplateObject) co).reset();
 
         int dropStrength = 1;
         createObstacles((int) (maxX * 0.4), (int) (maxY * 1.5));
@@ -195,6 +205,7 @@ class Game
             Remove old obstacles
          */
         TO.removeIf(TemplateObject::isReset);
+        CO.removeIf( x -> ((TemplateObject) x).isReset());
         regenAvailable = true;
     }
 
@@ -219,75 +230,12 @@ class Game
 
     private void checkCollision()
     {
-        /*
-            Find obstacles from updatable \ drawables
-         */
-        ArrayList<Obstacle> arr = new ArrayList<>();
-        synchronized (TO)
-        {
-            for (TemplateObject to : TO)
-            {
-                if (to.getClass() == Obstacle.class) arr.add((Obstacle) to);
-            }
-        }
-
         if (p.checkBelow()) resetScore();
         p.checkAbove();
         p.checkSides();
-//
-//        synchronized (TO) { for (TemplateObject to : TO) collide(p, to); }
 
         if (System.currentTimeMillis() - lastCollision < 500) return;
-
-        /*
-            Check for each obstacle if the player hit them
-         */
-        double pEPS = p.radius;
-        for (Obstacle o : arr)
-        {
-            if (p.isIn(o, pEPS))
-            {
-                p.collide(o);
-                o.collide(p);
-                lastCollision = System.currentTimeMillis();
-
-                Color temp = o.cl;
-                o.cl = p.cl;
-                p.cl = temp;
-
-                score += scoreHitReward;
-                sound.collide(null);
-                generateDust(o);
-
-                hitObstacle = true;
-                break;
-            }
-        }
-
-        /*
-            Check if the player hit a launch pad
-         */
-        if (between(p.x, p.y, l.x1, l.y1, l.x2, l.y2))
-        { l.collide(p); lastCollision = System.currentTimeMillis(); }
-
-        if (between(p.x, p.y, r.x1, r.y1, r.x2, r.y2))
-        { r.collide(p); lastCollision = System.currentTimeMillis(); }
-    }
-
-    private boolean between(double x, double y, double x1, double y1, double x2, double y2)
-    {
-        double dtToX1 = (x - x1) * (x - x1) + (y - y1) * (y - y1);
-        dtToX1 = Math.sqrt(dtToX1);
-
-        double dtToX2 = (x - x2) * (x - x2) + (y - y2) * (y - y2);
-        dtToX2 = Math.sqrt(dtToX2);
-
-        double dtOverall = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-        dtOverall = Math.sqrt(dtOverall);
-
-        double dtEPS = 10;
-
-        return dtToX1 + dtToX2 - dtOverall < dtEPS;
+        synchronized (TO) { for (Collidable cld : CO) if (p.collide(cld)) lastCollision = System.currentTimeMillis(); }
     }
 
     private void resetScore()
@@ -445,9 +393,15 @@ class Game
         return penR;
     }
 
+    public int getMaxY()
+    {
+        return maxY;
+    }
+
     private final Collection<TemplateObject> TO;
+    private final Collection<Collidable> CO;
     private Player p;
-    private TemplateObject sound;
+    private Sound sound;
     private LaunchPad l, r;
 
     private final long FPS = 1000 / 60;
@@ -476,14 +430,6 @@ class Game
     private boolean hitObstacle = false;
 
 
-    public int getMaxY()
-    {
-        return maxY;
-    }
-
-    public void collide(Player p, TemplateObject to)
-    {}
-
     public static Color getRandColor()
     {
         /*
@@ -503,5 +449,35 @@ class Game
             b = b + 5;
         }
         return new Color(r, g, b);
+    }
+
+    public void hitObstacle(Player player, Obstacle o)
+    {
+        /*
+            Swap colors between player and obstacle
+         */
+        Color temp = o.cl;
+        o.cl = player.cl;
+        player.cl = temp;
+
+        /*
+            Add reward to score
+         */
+        score += scoreHitReward;
+
+        /*
+            Hit sound
+         */
+        if (sound != null) sound.beep();
+
+        /*
+            Particles flying off obstacle
+         */
+        generateDust(o);
+
+        /*
+            Stop score loss if hit an obstacle- reward player for recovery
+         */
+        hitObstacle = true;
     }
 }

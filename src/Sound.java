@@ -26,8 +26,7 @@ public class Sound extends TemplateObject
         clip.start();
     }
 
-    @Override
-    public void collide(TemplateObject to)
+    public void beep()
     {
         /*
             Randomly abort (don't make sound)

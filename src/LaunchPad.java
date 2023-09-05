@@ -2,7 +2,7 @@ import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 
-public class LaunchPad extends TemplateObject
+public class LaunchPad extends TemplateObject implements Collidable
 {
     double x1;
     double y1;

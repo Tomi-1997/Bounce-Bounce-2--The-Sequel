@@ -1,7 +1,7 @@
 import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 
-public class Obstacle extends TemplateObject
+public class Obstacle extends TemplateObject implements Collidable
 {
     double x, y, halfWidthStart, halfWidth, halfHeight, speed;
     Color cl;

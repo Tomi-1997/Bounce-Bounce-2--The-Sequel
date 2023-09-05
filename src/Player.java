@@ -1,7 +1,6 @@
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 public class Player extends TemplateObject
 {
@@ -73,10 +72,33 @@ public class Player extends TemplateObject
         //
     }
 
-    public void collide(TemplateObject to)
+    public boolean collide(Collidable cld)
     {
-        //
-        if (to.getClass() == Obstacle.class) bounce();
+        if (cld.getClass() == Obstacle.class) return collide((Obstacle) cld);
+        if (cld.getClass() == LaunchPad.class) return collide((LaunchPad) cld);
+        return false;
+    }
+
+    public boolean collide(Obstacle o)
+    {
+        if (isIn(o, radius))
+        {
+            bounce();
+            o.collide(this);
+            Game.getInstance().hitObstacle(this, o);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean collide(LaunchPad l)
+    {
+        if (between(x, y, l.x1, l.y1, l.x2, l.y2))
+        {
+            l.collide(this);
+            return true;
+        }
+        return false;
     }
 
     public void bounce()
@@ -97,10 +119,26 @@ public class Player extends TemplateObject
         for (int i = 0; i < 2; i++) update();
     }
 
-    public boolean isIn(Obstacle o, double pEPS)
+    private boolean isIn(Obstacle o, double pEPS)
     {
         return x + this.radius + pEPS > o.x - o.halfWidth && x - radius - pEPS < o.x + o.halfWidth &&
                 y + this.radius > o.y - o.halfHeight && y - radius < o.y + o.halfHeight;
+    }
+
+    private boolean between(double x, double y, double x1, double y1, double x2, double y2)
+    {
+        double dtToX1 = (x - x1) * (x - x1) + (y - y1) * (y - y1);
+        dtToX1 = Math.sqrt(dtToX1);
+
+        double dtToX2 = (x - x2) * (x - x2) + (y - y2) * (y - y2);
+        dtToX2 = Math.sqrt(dtToX2);
+
+        double dtOverall = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+        dtOverall = Math.sqrt(dtOverall);
+
+        double dtEPS = 10;
+
+        return dtToX1 + dtToX2 - dtOverall < dtEPS;
     }
 
     public boolean checkBelow()

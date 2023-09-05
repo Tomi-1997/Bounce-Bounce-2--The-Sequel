@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class TemplateObject implements Drawable, Updatable, Pressable, Resettable, Collidable
+public class TemplateObject implements Drawable, Updatable, Pressable, Resettable
 {
     double x, y, vx, vy;
     Color cl;
@@ -68,11 +68,6 @@ public class TemplateObject implements Drawable, Updatable, Pressable, Resettabl
 
     @Override
     public void update() {
-
-    }
-
-    @Override
-    public void collide(TemplateObject to) {
 
     }
 }
