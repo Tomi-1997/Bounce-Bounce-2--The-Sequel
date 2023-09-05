@@ -199,79 +199,10 @@ class Game
         StdDraw.setFont(font);
     }
 
-    private void restart()
-    {
-        restartAvailable = false;
-        /*
-            Print text to user indicating a reset is near
-         */
-        int duration = 1000;
-        int dots = 3;
-        StringBuilder text = new StringBuilder("Restarting");
-        for (int i = 0; i <= dots; i++)
-        {
-            final String lambdaText = text.toString();
-            TemplateObject d = new TemplateObject()
-            {
-                @Override
-                public void update() {}
-                @Override
-                public void reset() {}
-                @Override
-                public void onPress() {}
-                @Override
-                public void draw() { StdDraw.textLeft(maxX / 2.3, maxY / 1.5, lambdaText); }
-            };
-
-            add(d);
-            delay(duration / dots);
-            rm(d);
-            TO.remove(d);
-            text.append(".");
-        }
-
-        resetScore();
-
-        /*
-            Perform reset() for each object
-         */
-
-        for (TemplateObject to : TO)
-            to.reset();
-
-        int dropDuration = maxY / 2;
-        createObstacles((int) (maxX * 0.4), (int) (maxY * 1.5));
-
-        for (int i = 0; i < dropDuration; i++)
-        {
-            synchronized (TO)
-            {
-                for (TemplateObject u : TO)
-                {
-                    if (u.getClass() != Obstacle.class) continue;
-                    Obstacle o = (Obstacle) u;
-                    o.y = o.y - 2;
-                }
-            }
-            delay(10);
-        }
-
-
-        delay(1000);
-
-        TO.removeIf(TemplateObject::isReset);
-        restartAvailable = true;
-    }
-
     private boolean isRunning()
     {
         //
-        if (restartAvailable && StdDraw.isKeyPressed(KeyEvent.VK_R)) { new Thread(this::restart).start(); }
         return !StdDraw.isKeyPressed(KeyEvent.VK_Q);
-    }
-
-    public double getPenR() {
-        return penR;
     }
 
     private void checkCollision()
@@ -407,7 +338,7 @@ class Game
         }
 
         addAll(obstacleHitDust);
-        delay(2 * 1000);
+        delay(3 * 1000);
         rmAll(obstacleHitDust);
 
     }
@@ -497,6 +428,11 @@ class Game
         return hasMusic;
     }
 
+    public double getPenR()
+    {
+        return penR;
+    }
+
     private final Collection<TemplateObject> TO;
     private Player p;
     private TemplateObject sound;
@@ -523,7 +459,7 @@ class Game
 
     private final int beepFiles = 5;
     private boolean hasMusic = true;
-    private boolean restartAvailable = true, regenAvailable = true;
+    private boolean regenAvailable = true;
     private boolean isResetting = false;
     private boolean hitObstacle = false;
 
@@ -550,8 +486,8 @@ class Game
          */
         while (r + g + b < 200)
         {
-            r = r + 15;
-            g = g + 15;
+            r = r + 20;
+            g = g + 20;
             b = b + 5;
         }
         return new Color(r, g, b);

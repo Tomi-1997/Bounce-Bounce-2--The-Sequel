@@ -131,10 +131,10 @@ public class Player extends TemplateObject
             /*
                 Kinda close, draw a triangle
              */
-            if (y < maxY * 1.3)
+            if (y < maxY * 1.2)
             {
-                double[] xs = new double[]{x, x - offset, x + offset};
-                double[] ys = new double[]{maxY * 1.04, maxY, maxY};
+                double[] xs = new double[]{x, x - offset * 2, x + offset * 2};
+                double[] ys = new double[]{maxY * 1.04, maxY - offset, maxY - offset};
 
                 StdDraw.filledPolygon(xs, ys);
             }
@@ -154,8 +154,8 @@ public class Player extends TemplateObject
                 currentRad = Math.max(penR, currentRad);
                 StdDraw.setPenRadius(currentRad);
 
-                StdDraw.line(x, maxY * 1.04, x + offset , maxY);
-                StdDraw.line(x, maxY * 1.04, x - offset, maxY);
+                StdDraw.line(x, maxY * 1.04, x + offset , maxY - offset / 2);
+                StdDraw.line(x, maxY * 1.04, x - offset, maxY - offset / 2);
 
                 StdDraw.setPenRadius(penR);
             }
