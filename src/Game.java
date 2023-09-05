@@ -8,7 +8,7 @@ import java.util.Collections;
 
 class Game
 {
-    //TODO 
+    //TODO
     // finish player map collisions functions
     // move collision functions to entities
 
@@ -17,6 +17,7 @@ class Game
     {
         TO = Collections.synchronizedCollection(new ArrayList<>());
         createPlayer();
+        createButtons();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
         createSound();
@@ -31,6 +32,17 @@ class Game
         return myGame;
     }
 
+    private void createButtons()
+    {
+        ArrowButton left = new ArrowButton(KeyEvent.VK_LEFT, true);
+        ArrowButton right = new ArrowButton(KeyEvent.VK_RIGHT, false);
+
+        add(left);
+        add(right);
+
+        p.left = left;
+        p.right = right;
+    }
     private void createInformation()
     {
         Information i = new Information(maxX, maxY, this.p);

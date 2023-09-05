@@ -12,6 +12,8 @@ public class Player extends TemplateObject
     double vy;
     public Color cl;
 
+    ArrowButton left, right;
+
     public Player(double x, double y, double radius)
     {
         this.x = x;
@@ -51,13 +53,13 @@ public class Player extends TemplateObject
             Changing direction has more effect on velocity up to a certain limit.
          */
         double strength = Game.getInstance().getVX();
-        if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT))
+        if (right.isPressed())
         {
             if (vx > Game.getInstance().getMaxVX()) return; // For cases when speed is more than max after hitting a launch pad
             if (vx < 0) strength = strength * 2; // Pressing right but current direction is left
             vx = Math.min(Game.getInstance().getMaxVX(), vx + strength);
         }
-        if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT))
+        if (left.isPressed())
         {
             if (vx < -Game.getInstance().getMaxVX()) return; // For cases when speed is more than max after hitting a launch pad
             if (vx > 0) strength = strength * 2; // Pressing left but current direction is right
@@ -73,6 +75,7 @@ public class Player extends TemplateObject
 
     public void collide(TemplateObject to)
     {
+        //
         if (to.getClass() == Obstacle.class) bounce();
     }
 

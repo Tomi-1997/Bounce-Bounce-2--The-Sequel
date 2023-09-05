@@ -34,9 +34,9 @@ public class Information extends TemplateObject
             Sub text
          */
         Game.getInstance().setFontSize(textSize);
-        StdDraw.textLeft(-maxX * 0.02, maxY * 0.05, "press q to quit");
-        StdDraw.textLeft(-maxX * 0.02, 0, "hold right and left arrow keys to move");
-        StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
+//        StdDraw.textLeft(-maxX * 0.02, maxY * 0.05, "press q to quit");
+//        StdDraw.textLeft(-maxX * 0.02, 0, "hold right and left arrow keys to move");
+//        StdDraw.textLeft(maxX * 0.85, 0, "high score - " + currentMilestone);
         if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfeifel");
 
 
