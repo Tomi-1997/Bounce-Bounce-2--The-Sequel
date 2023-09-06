@@ -432,23 +432,8 @@ class Game
 
     public static Color getRandColor()
     {
-        /*
-            Generate a random colour
-         */
-        int r = (int) (Math.random() * 255);
-        int g = (int) (Math.random() * 255);
-        int b = (int) (Math.random() * 255);
-
-        /*
-            If needed, brighten
-         */
-        while (r + g + b < 200)
-        {
-            r = r + 20;
-            g = g + 20;
-            b = b + 5;
-        }
-        return new Color(r, g, b);
+        LumColor lumColor = new LumColor();
+        return lumColor.getColor();
     }
 
     public void hitObstacle(Player player, Obstacle o)
