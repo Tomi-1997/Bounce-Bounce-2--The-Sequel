@@ -98,11 +98,67 @@ public class Obstacle extends TemplateObject implements Collidable
         }
     }
 
+    /**
+     * Performs the default recoil pattern, recoil down a bit, go back up. (No x move)
+     * @param to object collided with
+     */
     @Override
     public void collide(TemplateObject to)
     {
-        //
         new Thread(this::recoil).start();
+    }
+
+
+    /**
+     * Performs recoil based on current velocity of object which the collision has occurred with.
+     * @param to object collided with
+     * @param vx X velocity
+     * @param vy Y velocity
+     */
+    public void collide(TemplateObject to, double vx, double vy)
+    {
+        new Thread(
+                () ->
+                {
+                    double strY = vy * 1.5; // make a higher drop more significant
+                    double strX = vx < 0 ? vx * 0.25 : vx * 1.5; // against the flow - higher influence
+
+                    /*
+                        Go down + sideways
+                     */
+                    double ySum = 0;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        x = x + strX;
+                        y = y - strY;
+
+                        ySum = ySum + strY;
+                        strY = strY * 0.8;
+                        strX = strX * 0.8;
+                        Game.getInstance().delay();
+                    }
+
+                    /*
+                        Marked reset, don't go back up- will disappear promptly.
+                     */
+                    if (isReset()) return;
+
+                    /*
+                        Go back up
+                     */
+
+                    Game.getInstance().delay(100);
+                    strY = 0.1; // start rising slowly
+                    double backUpStr = 0.05; // increase speed gradually
+                    while (ySum >= 0)
+                    {
+                        y = y + strY;
+                        ySum = ySum - strY;
+                        strY += backUpStr;
+                        Game.getInstance().delay();
+                    }
+                }
+        ).start();
     }
 
     @Override

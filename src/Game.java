@@ -234,8 +234,12 @@ class Game
         p.checkAbove();
         p.checkSides();
 
-        if (System.currentTimeMillis() - lastCollision < 500) return;
-        synchronized (TO) { for (Collidable cld : CO) if (p.collide(cld)) lastCollision = System.currentTimeMillis(); }
+        if (System.currentTimeMillis() - lastCollision < 350) return;
+        synchronized (TO)
+        {
+            for (Collidable cld : CO)
+                if (p.collide(cld)) {lastCollision = System.currentTimeMillis(); break;}
+        }
     }
 
     private void resetScore()

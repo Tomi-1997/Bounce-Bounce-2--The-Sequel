@@ -84,7 +84,7 @@ public class Player extends TemplateObject
         if (isIn(o, radius))
         {
             bounce();
-            o.collide(this);
+            o.collide(this, vx, vy);
             Game.getInstance().hitObstacle(this, o);
             return true;
         }
