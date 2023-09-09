@@ -195,30 +195,9 @@ class Game
     private void startDB()
     {
         /*
-            Get high scorer from DB
+            Update current high scorer and set listener for changes
          */
-        new Thread(
-                () ->
-                {
-                    while( isRunning() )
-                    {
-                        try
-                        {
-                            dbObject highScorer = dbMediator.getHighScorer();
-                            assert highScorer != null;
-                            globalHighName = highScorer.getUsername();
-                            globalHighScore = highScorer.getScore();
-                            delay(2000);
-                        }
-                        catch (Exception e)
-                        {
-                            globalHighName = null;
-                            delay(5000);
-                        }
-                    }
-
-                }
-        ).start();
+        new Thread( () -> dbMediator.updatePlayerPeriodically(globalHighScorer) ).start();
     }
 
     public void run()
@@ -583,12 +562,10 @@ class Game
 
     /**
      * playerName - Current player name
-     * globalHighName - The high scorer's username as it stands in the DB
-     * globalHighScore - The high scorer's score as it stands in the DB
+     * globalHighScorer - The current high scorer as it stands in the DB
      */
     private String playerName;
-    private String globalHighName = null;
-    private int globalHighScore;
+    private final dbObject globalHighScorer = new dbObject("", 0);
 
 
     public static Color getRandColor()
@@ -631,8 +608,16 @@ class Game
     {
         return playerName;
     }
-    public String getGlobalHighName() { return globalHighName; }
-    public int getGlobalHighScore() { return globalHighScore; }
+    public dbObject getGlobalHighScorer() { return globalHighScorer; }
+
+    public void updateDBScorer(int queryScore)
+    {
+        if (globalHighScorer.getUsername().length() == 0) return;
+        if (queryScore > globalHighScorer.getScore())
+        {
+            dbMediator.setHighScorer(playerName, queryScore);
+        }
+    }
 
     public double distance(double x, double y, double x1, double y1)
     {

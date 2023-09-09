@@ -38,14 +38,24 @@ public class Information extends TemplateObject
         y = maxY;
         Game.getInstance().setFontSize(textSize);
 
-        String globalHighScorer = Game.getInstance().getGlobalHighName();
 
-        if (globalHighScorer != null)
+        /*
+            Get global high score
+         */
+        dbObject globalHighScorer = Game.getInstance().getGlobalHighScorer();
+
+        /*
+            Add to current text if it has been initialised or downloaded from db
+         */
+        if (globalHighScorer.getUsername().length() > 0)
         {
-            text = "tomer (Global) high score - " + 100;
+            text = globalHighScorer.getUsername() + " (Global) high score - " + globalHighScorer.getScore();
             text = text + "    ";
         }
 
+        /*
+            Current high score
+         */
         text = text + Game.getInstance().getPlayerName() + " (you) high score - " + currentMilestone;
         StdDraw.textLeft(x, y, text);
 
@@ -84,6 +94,12 @@ public class Information extends TemplateObject
         atMilestone = true;
         titleSize *= 2;    // big title
         currentMilestone = currentMilestone + milestoneInc; // Set next milestone
+
+        /*
+            If there is DB connection, check if passed global high scorer and set this score to be top
+         */
+        Game.getInstance().updateDBScorer(currentMilestone);
+
         Game.getInstance().delay(4 * 1000); // wait a bit, then revert to normal
         atMilestone = false;
         titleSize /= 2;
