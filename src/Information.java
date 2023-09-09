@@ -8,7 +8,7 @@ public class Information extends TemplateObject
     Player p;
 
     ArrayList<Particles> particles;
-    int titleSize = 60, textSize = 12, currentMilestone = 0, milestoneInc = 100;
+    int titleSize = 60, textSize = 14, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
     public Information(double maxX, double maxY, Player p)
@@ -34,7 +34,7 @@ public class Information extends TemplateObject
             Global and current player high score
          */
         String text = "";
-        x = maxX * 0.025;
+        x = 0;
         y = maxY;
         Game.getInstance().setFontSize(textSize);
 
