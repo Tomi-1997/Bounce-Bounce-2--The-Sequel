@@ -1,25 +1,42 @@
 import edu.princeton.cs.introcs.StdDraw;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 class Game
 {
     private static Game myGame;
     private Game()
     {
+
         TO = Collections.synchronizedCollection(new ArrayList<>());
         CO = Collections.synchronizedCollection(new ArrayList<>());
+
+        /*
+            Init screen
+         */
+        initWindow();
+
+        /*
+            Get name from player
+         */
+        startScreen();
+
+        /*
+            Create all entities
+         */
         createPlayer();
-        createButtons();
         createObstacles((int) (maxX * 0.25), maxY / 2);
         createInformation();
+        createButtons();
         createSound();
         createLaunchPads();
-    }
+
+        /*
+            Start connection with server
+         */
+        startDB();
+}
 
     public static synchronized Game getInstance()
     {
@@ -29,22 +46,90 @@ class Game
         return myGame;
     }
 
-    private void createButtons()
+    private void initWindow()
     {
-        ArrowButton left = new ArrowButton(KeyEvent.VK_LEFT, true);
-        ArrowButton right = new ArrowButton(KeyEvent.VK_RIGHT, false);
-
-        add(left);
-        add(right);
-
-        p.left = left;
-        p.right = right;
+        StdDraw.setCanvasSize(maxX, maxY);
+        StdDraw.setXscale(0, maxX);
+        StdDraw.setYscale(0, maxY);
+        StdDraw.setPenRadius(penR);
+        StdDraw.clear(StdDraw.BLACK);
     }
 
-    private void createInformation()
+    private void startScreen()
     {
-        Information i = new Information(maxX, maxY, this.p);
-        TO.add(i);
+        /*
+            Create object to query user for username and display it
+         */
+        TemplateObject nameQuery = new TemplateObject()
+        {
+            String username = "";
+            double lastBackSpace = 0;
+            @Override
+            public void update()
+            {
+                if (!StdDraw.hasNextKeyTyped()) return;
+                if (StdDraw.isKeyPressed(KeyEvent.VK_BACK_SPACE))
+                {
+                    if (username.length() == 0) return;
+                    if (System.currentTimeMillis() - lastBackSpace < 100) return;
+                    lastBackSpace = System.currentTimeMillis();
+                    username = username.substring(0, username.length() - 1);
+                    return;
+                }
+
+                char c = StdDraw.nextKeyTyped();
+                if (!(Character.isAlphabetic(c) || Character.isDigit(c)) || username.length() > 10) return;
+
+                username = username + Character.toLowerCase(c);
+            }
+            @Override
+            public void onPress() {}
+            @Override
+            public void draw()
+            {
+                StdDraw.setPenColor(Color.WHITE);
+                /*
+                    Big title
+                 */
+                setFontSize(Math.max(maxX, maxY) / 10);
+                StdDraw.text(maxX * 0.5, maxY * 0.7, "Enter username");
+
+                /*
+                    Player current name
+                 */
+                setFontSize(Math.max(maxX, maxY) / 15);
+                StdDraw.text(maxX * 0.5, maxY * 0.5, username);
+            }
+            @Override
+            public boolean isReset()
+            {
+                if (StdDraw.isKeyPressed(KeyEvent.VK_ENTER) && username.length() > 0)
+                {
+                    playerName = username;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        add(nameQuery);
+        while(!nameQuery.isReset())
+        {
+            StdDraw.clear(StdDraw.BLACK);
+            synchronized (TO) { for (Updatable u : TO) u.update(); }
+            synchronized (TO) { for (Drawable  d : TO) d.draw(); }
+            StdDraw.show(0);
+            delay();
+        }
+        rm(nameQuery);
+    }
+
+    private void createPlayer()
+    {
+        int playerRadius = Math.min(maxX, maxY) / 80;
+        Player p = new Player(0, maxY / 2.0, playerRadius);
+        TO.add(p);
+        this.p = p;
     }
 
     private void createObstacles(int x, int y)
@@ -63,12 +148,22 @@ class Game
         }
     }
 
-    private void createPlayer()
+    private void createInformation()
     {
-        int playerRadius = Math.min(maxX, maxY) / 80;
-        Player p = new Player(0, maxY / 2.0, playerRadius);
-        TO.add(p);
-        this.p = p;
+        Information i = new Information(maxX, maxY, this.p);
+        TO.add(i);
+    }
+
+    private void createButtons()
+    {
+        ArrowButton left = new ArrowButton(KeyEvent.VK_LEFT, true);
+        ArrowButton right = new ArrowButton(KeyEvent.VK_RIGHT, false);
+
+        add(left);
+        add(right);
+
+        p.left = left;
+        p.right = right;
     }
 
     private void createSound()
@@ -97,13 +192,37 @@ class Game
         CO.add(r);
     }
 
+    private void startDB()
+    {
+        /*
+            Get high scorer from DB
+         */
+        new Thread(
+                () ->
+                {
+                    while( isRunning() )
+                    {
+                        try
+                        {
+                            dbObject highScorer = dbMediator.getHighScorer();
+                            assert highScorer != null;
+                            globalHighName = highScorer.getUsername();
+                            globalHighScore = highScorer.getScore();
+                            delay(2000);
+                        }
+                        catch (Exception e)
+                        {
+                            globalHighName = null;
+                            delay(5000);
+                        }
+                    }
+
+                }
+        ).start();
+    }
+
     public void run()
     {
-        StdDraw.setCanvasSize(maxX, maxY);
-        StdDraw.setXscale(0, maxX);
-        StdDraw.setYscale(0, maxY);
-        StdDraw.setPenRadius(penR);
-
         while ( isRunning() )
         {
 //            log();
@@ -288,23 +407,22 @@ class Game
 
     private void generateDust(Obstacle o)
     {
-        new Thread(() -> generateDust_(o)).start();
-    }
+        new Thread(
+                () ->
+                {
+                    int fireworksNum = 10;
+                    double radius = 5;
+                    ArrayList<TemplateObject> obstacleHitDust = new ArrayList<>();
+                    for (int i = 0; i < fireworksNum; i++)
+                    {
+                        obstacleHitDust.add(new Particles(o.x, o.y, radius, false, o.cl));
+                    }
 
-    private void generateDust_(Obstacle o)
-    {
-        int fireworksNum = 10;
-        double radius = 5;
-        ArrayList<TemplateObject> obstacleHitDust = new ArrayList<>();
-        for (int i = 0; i < fireworksNum; i++)
-        {
-            obstacleHitDust.add(new Particles(o.x, o.y, radius, false, o.cl));
-        }
-
-        addAll(obstacleHitDust);
-        delay(3 * 1000);
-        rmAll(obstacleHitDust);
-
+                    addAll(obstacleHitDust);
+                    delay(3 * 1000);
+                    rmAll(obstacleHitDust);
+                }
+        ).start();
     }
 
     private void rm(TemplateObject d)
@@ -427,11 +545,17 @@ class Game
     private double scorePassiveGain = 0.1;
     private final int scoreHitReward = 10;
 
+
     private final int beepFiles = 5;
     private boolean hasMusic = true;
     private boolean regenAvailable = true;
     private boolean isResetting = false;
     private boolean hitObstacle = false;
+
+
+    private String playerName;
+    private String globalHighName = null;
+    private int globalHighScore;
 
 
     public static Color getRandColor()
@@ -468,5 +592,20 @@ class Game
             Stop score loss if hit an obstacle- reward player for recovery
          */
         hitObstacle = true;
+    }
+
+    public String getPlayerName()
+    {
+        return playerName;
+    }
+    public String getGlobalHighName() { return globalHighName; }
+    public int getGlobalHighScore() { return globalHighScore; }
+
+    public double distance(double x, double y, double x1, double y1)
+    {
+        double dx = (x - x1) * (x - x1);
+        double dy = (y - y1) * (y - y1);
+
+        return Math.sqrt(dx + dy);
     }
 }

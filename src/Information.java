@@ -22,7 +22,7 @@ public class Information extends TemplateObject
     public void draw()
     {
         StdDraw.setPenColor(p.cl);
-
+        double x, y;
         /*
             Title
          */
@@ -31,10 +31,28 @@ public class Information extends TemplateObject
         StdDraw.text(maxX / 2, maxY / 10, title);
 
         /*
-            Sub text
+            Global and current player high score
          */
+        String text = "";
+        x = maxX * 0.025;
+        y = maxY;
         Game.getInstance().setFontSize(textSize);
-        StdDraw.textLeft(maxX * 0.025, maxY, "high score - " + currentMilestone);
+
+        String globalHighScorer = Game.getInstance().getGlobalHighName();
+
+        if (globalHighScorer != null)
+        {
+            text = "tomer (Global) high score - " + 100;
+            text = text + "    ";
+        }
+
+        text = text + Game.getInstance().getPlayerName() + " (you) high score - " + currentMilestone;
+        StdDraw.textLeft(x, y, text);
+
+
+        /*
+            Music credit
+         */
         if (Game.getInstance().hasMusic()) StdDraw.textRight(maxX, maxY, "Music by Tom Pfeifel");
 
 
@@ -42,6 +60,7 @@ public class Information extends TemplateObject
             Confetti - when a milestone is hit
          */
         if (atMilestone) for (Particles f : particles) f.draw();
+        StdDraw.setPenColor(p.cl);
     }
 
     @Override
