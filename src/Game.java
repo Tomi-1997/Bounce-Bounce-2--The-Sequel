@@ -526,10 +526,28 @@ class Game
     private Sound sound;
     private LaunchPad l, r;
 
+    /**
+     * FPS - Delay between each iteration
+     * G - Force of downward pull for certain objects
+     * obstacles - Number of obstacles in each stage\iteration
+     * maxX and maxY define the window size
+     */
     private final long FPS = 1000 / 60;
     private final double G = 0.15;
     private final int obstacles = 10, maxX = 800, maxY = 400;
 
+    /**
+     * minVY, maxVY - Limit of the player fall or rise speed
+     * maxVX - Maximum side speed
+     * VX - Effect of input (user pressing arrows) on the current X speed
+     * hitVY - Minimum value for VY when a player hits an object (In case a player hits an object with almost no Y speed)
+     * baseSpeed - Minimal speed of an obstacle
+     * SpeedMultiplier - How much the current score affects the speed and width of obstacles (higher score - faster obstacles)
+     * maxSpeed - Maximal speed of an obstacle.
+     * lastCollision - defined to be System.currentTime() when a player hits a collidable (obstacle, launchpad)
+     * penR - Radius of StdDraw pen
+     * beepProb - Probability for a beep sound to play when a player hits an obstacle
+     */
     private final double minVY = -10, maxVY = 7;
     private final double maxVX = 4;
     private final double VX = 0.2;
@@ -541,18 +559,33 @@ class Game
     private double penR = 0.005;
     private final double beepProb = 0.2;
 
+    /**
+     * score - score of the player
+     * scorePassiveGain - Value added to score each iteration
+     * scoreHitReward - Value added to score for each obstacle hit
+     */
     private double score = 0;
     private double scorePassiveGain = 0.1;
     private final int scoreHitReward = 10;
 
-
+    /**
+     * beepFiles - number of beep files (beep1, beep2, ...)
+     * hasMusic - Did the music player successfully start the background music
+     * regenAvailable - Is a regeneration currently in hold or taking place. (New obstacles are added, old are removed)
+     * isResetting - Is the score currently resetting (going to 0 after a player dropped)
+     * hitObstacle - Did a player recently hit an obstacle (Main use is to stop the score reset process)
+     */
     private final int beepFiles = 5;
     private boolean hasMusic = true;
     private boolean regenAvailable = true;
     private boolean isResetting = false;
     private boolean hitObstacle = false;
 
-
+    /**
+     * playerName - Current player name
+     * globalHighName - The high scorer's username as it stands in the DB
+     * globalHighScore - The high scorer's score as it stands in the DB
+     */
     private String playerName;
     private String globalHighName = null;
     private int globalHighScore;
