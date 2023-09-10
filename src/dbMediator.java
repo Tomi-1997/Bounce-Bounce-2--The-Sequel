@@ -112,7 +112,7 @@ public class dbMediator
         dbObject res = getHighScorer();
         System.out.println(res);
 
-        setHighScorer("tomi", 0);
+        setHighScorer("tomi", 50);
 
         res = getHighScorer();
         System.out.println(res);
