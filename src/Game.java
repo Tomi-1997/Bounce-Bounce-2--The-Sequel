@@ -64,6 +64,7 @@ class Game
         {
             String username = "";
             double lastBackSpace = 0;
+            final int nameLimit = 7;
             @Override
             public void update()
             {
@@ -78,7 +79,7 @@ class Game
                 }
 
                 char c = StdDraw.nextKeyTyped();
-                if (!(Character.isAlphabetic(c) || Character.isDigit(c)) || username.length() > 10) return;
+                if (!(Character.isAlphabetic(c) || Character.isDigit(c)) || username.length() > nameLimit) return;
 
                 username = username + Character.toLowerCase(c);
             }
@@ -316,7 +317,7 @@ class Game
 
     public void setFontSize(int titleSize)
     {
-        Font font = new Font("Monospaced", Font.BOLD, titleSize);
+        Font font = new Font("Calibri", Font.BOLD, titleSize);
         StdDraw.setFont(font);
     }
 

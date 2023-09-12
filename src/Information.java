@@ -8,7 +8,7 @@ public class Information extends TemplateObject
     Player p;
 
     ArrayList<Particles> particles;
-    int titleSize = 60, textSize = 14, currentMilestone = 0, milestoneInc = 100;
+    int titleSize = 76, textSize = 18, currentMilestone = 0, milestoneInc = 100;
     boolean atMilestone = false;
 
     public Information(double maxX, double maxY, Player p)
