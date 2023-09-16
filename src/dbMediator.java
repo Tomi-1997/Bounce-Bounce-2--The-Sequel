@@ -2,11 +2,15 @@ import com.mongodb.*;
 import com.mongodb.client.*;
 import org.bson.Document;
 
+import java.util.ArrayList;
+
 
 public class dbMediator
 {
     private static String getAuth()
     {
+        // DB User with limited permission to only find() and update() document in a certain cluster
+        // Expiring soon, probably expired already
         return "mongodb+srv://BB2_User:J1BzrYun6ngGGPDS@cluster0.lkwjn6f.mongodb.net/?retryWrites=true&w=majority";
     }
 
@@ -62,8 +66,6 @@ public class dbMediator
 
     public static void setHighScorer(String username, int score)
     {
-        String auth = getAuth();
-        if (auth.length() == 0) return;
         MongoClientSettings settings = getMongoSettings();
 
         // Client Connection
@@ -87,8 +89,6 @@ public class dbMediator
 
     public static dbObject getHighScorer()
     {
-        String auth = getAuth();
-        if (auth.length() == 0) return null;
         MongoClientSettings settings = getMongoSettings();
 
         // Client Connection
@@ -109,13 +109,31 @@ public class dbMediator
 
     public static void main(String[] args)
     {
+        testInsert();
         dbObject res = getHighScorer();
         System.out.println(res);
-
         setHighScorer("tomi", 50);
-
         res = getHighScorer();
         System.out.println(res);
+    }
+
+    public static void testInsert()
+    {
+        // Client Connection
+        try (MongoClient mongoClient = MongoClients.create(getMongoSettings()))
+        {
+            MongoDatabase database = mongoClient.getDatabase("BB2");
+            MongoCollection<Document> collection = database.getCollection("Highscore");
+
+            Document d = new Document();
+            d.put("k1", "v1");
+            d.put("k2", "v2");
+            collection.insertOne(d);
+        }
+        catch (Exception e)
+        {
+            System.out.println("DB Access limited, as intended");
+        }
     }
 }
 
