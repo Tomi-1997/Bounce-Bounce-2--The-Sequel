@@ -198,7 +198,7 @@ class Game
         /*
             Update current high scorer and set listener for changes
          */
-        new Thread( () -> dbMediator.updatePlayerPeriodically(globalHighScorer) ).start();
+        new Thread( () -> dbMediator.updatePlayerPeriodically(globalHighScorer)).start();
     }
 
     public void run()
@@ -616,6 +616,7 @@ class Game
         if (globalHighScorer.getUsername().length() == 0) return;
         if (queryScore > globalHighScorer.getScore())
         {
+            System.out.println("Uploading high score to database");
             dbMediator.setHighScorer(playerName, queryScore);
         }
     }

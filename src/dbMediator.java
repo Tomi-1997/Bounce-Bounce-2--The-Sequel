@@ -16,16 +16,11 @@ public class dbMediator
 
     public static void updatePlayerPeriodically(dbObject dbo)
     {
-        String auth = getAuth();
-        if (auth.length() == 0) return;
-
         dbObject highScorerAtLaunch = getHighScorer();
-        if (highScorerAtLaunch != null)
-        {
-            dbo.setUsername(highScorerAtLaunch.getUsername());
-            dbo.setScore(highScorerAtLaunch.getScore());
-        }
+        if (highScorerAtLaunch == null) return;
 
+        dbo.setUsername(highScorerAtLaunch.getUsername());
+        dbo.setScore(highScorerAtLaunch.getScore());
         MongoClientSettings settings = getMongoSettings();
 
         // Client Connection
@@ -49,6 +44,10 @@ public class dbMediator
                     }
             );
 
+        }
+        catch(Exception e)
+        {
+            System.out.println("No database access");
         }
     }
 
@@ -90,7 +89,6 @@ public class dbMediator
     public static dbObject getHighScorer()
     {
         MongoClientSettings settings = getMongoSettings();
-
         // Client Connection
         try (MongoClient mongoClient = MongoClients.create(settings))
         {
@@ -104,17 +102,21 @@ public class dbMediator
                 return new dbObject(name, score);
             }
         }
+        catch(Exception e)
+        {
+            System.out.println("No database access");
+        }
         return null;
     }
 
     public static void main(String[] args)
     {
-        testInsert();
-        dbObject res = getHighScorer();
-        System.out.println(res);
-        setHighScorer("tomi", 50);
-        res = getHighScorer();
-        System.out.println(res);
+//        testInsert();
+//        dbObject res = getHighScorer();
+//        System.out.println(res);
+//        setHighScorer("tomi", 50);
+//        res = getHighScorer();
+//        System.out.println(res);
     }
 
     public static void testInsert()
